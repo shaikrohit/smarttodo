@@ -1,0 +1,24 @@
+package com.example.smarttodo.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.Date
+
+@Entity(tableName = "tasks")
+data class Task(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val title: String,
+    val description: String = "",
+    val priority: Int = 1,
+    val isCompleted: Boolean = false,
+    val createdAt: Date = Date(),
+    val dueDate: Date? = null,
+    val hasReminder: Boolean = false
+)
+
+enum class Priority(val value: Int, val displayName: String) {
+    LOW(1, "Low"),
+    MEDIUM(2, "Medium"),
+    HIGH(3, "High")
+}

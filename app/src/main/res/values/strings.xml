@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart To-Do</string>
+    <string name="search_hint">Search tasks...</string>
+    <string name="add_task">Add new task</string>
+    <string name="no_tasks_title">No tasks yet!</string>
+    <string name="no_tasks_subtitle">Tap the + button to add your first task</string>
+    <string name="task_completed">Task completed! 🎉</string>
+    <string name="task_incomplete">Task marked as incomplete</string>
+    <string name="task_deleted">Task deleted</string>
+    <string name="task_duplicated">Task duplicated</string>
+    <string name="task_created">Task created</string>
+    <string name="task_updated">Task updated</string>
+    <string name="add_task_title">Add New Task</string>
+    <string name="edit_task_title">Edit Task</string>
+    <string name="task_title_hint">Task title *</string>
+    <string name="task_description_hint">Description (optional)</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_high">High</string>
+    <string name="save_task">Save Task</string>
+    <string name="update_task">Update Task</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="delete_task_title">Delete Task</string>
+    <string name="delete_task_message">Are you sure you want to delete "%1$s"?</string>
+    <string name="toggle_theme">Toggle theme</string>
+    <string name="delete_completed_tasks">Delete completed tasks</string>
+    <string name="delete_all_tasks">Delete all tasks</string>
+    <string name="mark_complete">Mark task as complete</string>
+    <string name="more_options">More options</string>
+    <string name="title_required">Title is required</string>
+</resources>
