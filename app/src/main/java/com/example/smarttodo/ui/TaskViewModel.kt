@@ -1,12 +1,10 @@
 package com.example.smarttodo.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smarttodo.data.Task
-import com.example.smarttodo.data.TaskDatabase
 import com.example.smarttodo.data.TaskRepository
 import kotlinx.coroutines.launch
 
@@ -14,14 +12,12 @@ import kotlinx.coroutines.launch
  * ViewModel for managing task data and UI state
  * Part of MVVM architecture pattern
  */
-class TaskViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository: TaskRepository
+class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     // LiveData for observing tasks
-    val allTasks: LiveData<List<Task>>
-    val incompleteTasks: LiveData<List<Task>>
-    val completedTasks: LiveData<List<Task>>
+    val allTasks: LiveData<List<Task>> = repository.allTasks
+    val incompleteTasks: LiveData<List<Task>> = repository.incompleteTasks
+    val completedTasks: LiveData<List<Task>> = repository.completedTasks
 
     // Current filter state
     private val _currentFilter = MutableLiveData<TaskFilter>(TaskFilter.ALL)
@@ -34,14 +30,6 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     // Loading state
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
-
-    init {
-        val taskDao = TaskDatabase.getDatabase(application).taskDao()
-        repository = TaskRepository(taskDao)
-        allTasks = repository.allTasks
-        incompleteTasks = repository.incompleteTasks
-        completedTasks = repository.completedTasks
-    }
 
     /**
      * Insert a new task
@@ -70,7 +58,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
      * Toggle task completion
      */
     fun toggleTaskCompletion(task: Task) = viewModelScope.launch {
-        repository.toggleTaskCompletion(task)
+        repository.toggleTaskCompletion(task.id)
     }
 
     /**

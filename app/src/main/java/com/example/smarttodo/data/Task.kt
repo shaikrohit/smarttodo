@@ -2,6 +2,7 @@ package com.example.smarttodo.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.util.Date
 
 @Entity(tableName = "tasks")
@@ -15,9 +16,9 @@ data class Task(
     val createdAt: Date = Date(),
     val dueDate: Date? = null,
     val hasReminder: Boolean = false
-)
+) : Serializable
 
-enum class Priority(val value: Int, val displayName: String) {
+enum class Priority(val value: Int, val displayName: String) : Serializable {
     LOW(1, "Low"),
     MEDIUM(2, "Medium"),
     HIGH(3, "High")
