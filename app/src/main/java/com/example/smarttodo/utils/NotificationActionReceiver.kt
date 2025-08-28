@@ -34,7 +34,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
             val repository = TaskRepository(database.taskDao())
             val task = repository.getTaskById(taskId)
             task?.let {
-                repository.toggleTaskCompletion(it)
+                repository.toggleTaskCompletion(taskId)
                 NotificationHelper(context).cancelNotification(taskId)
                 CoroutineScope(Dispatchers.Main).launch {
                     Toast.makeText(context, "Task completed!", Toast.LENGTH_SHORT).show()

@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smarttodo.data.Task
+import com.example.smarttodo.data.TaskDatabase
+import com.example.smarttodo.data.TaskRepository
 import com.example.smarttodo.databinding.ActivityMainBinding
 import com.example.smarttodo.ui.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,7 +29,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskAdapter: TaskAdapter
-    private val taskViewModel: TaskViewModel by viewModels()
+    private val taskViewModel: TaskViewModel by viewModels {
+        TaskViewModelFactory(TaskRepository(TaskDatabase.getDatabase(this).taskDao()))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
