@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import com.example.smarttodo.SmartTodoApplication
 import com.example.smarttodo.data.TaskDatabase
 import com.example.smarttodo.data.TaskRepository
 import kotlinx.coroutines.CoroutineScope
@@ -30,8 +31,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     private fun completeTask(context: Context, taskId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val database = TaskDatabase.getDatabase(context)
-            val repository = TaskRepository(database.taskDao())
+            val repository = (context.applicationContext as SmartTodoApplication).repository
             val task = repository.getTaskById(taskId)
             task?.let {
                 repository.toggleTaskCompletion(taskId)
