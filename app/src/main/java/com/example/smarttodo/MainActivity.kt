@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskAdapter: TaskAdapter
     private val taskViewModel: TaskViewModel by viewModels {
-        TaskViewModelFactory(TaskRepository(TaskDatabase.getDatabase(this).taskDao()))
+        TaskViewModelFactory((application as SmartTodoApplication).repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
