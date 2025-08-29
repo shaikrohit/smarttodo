@@ -12,4 +12,11 @@
     <dimen name="task_item_spacing">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="empty_state_image_size">120dp</dimen>
+    <dimen name="empty_state_title_size">18sp</dimen>
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="checkbox_margin_end">12dp</dimen>
+    <dimen name="description_margin_top">4dp</dimen>
+    <dimen name="icon_margin_end">4dp</dimen>
+    <dimen name="priority_indicator_width">4dp</dimen>
 </resources>

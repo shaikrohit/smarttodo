@@ -32,4 +32,25 @@
     <string name="mark_complete">Mark task as complete</string>
     <string name="more_options">More options</string>
     <string name="title_required">Title is required</string>
+    <string name="tasks_refreshed">Tasks refreshed</string>
+    <string name="task_title_copy_suffix" formatted="false"> (Copy)</string>
+    <string name="delete_completed_tasks_title">Delete Completed Tasks</string>
+    <string name="delete_completed_tasks_message">Are you sure you want to delete all completed tasks?</string>
+    <string name="delete_all_tasks_title">Delete All Tasks</string>
+    <string name="delete_all_tasks_message">Are you sure you want to delete ALL tasks? This cannot be undone.</string>
+    <string name="delete_all">Delete All</string>
+    <string name="completed_tasks_deleted">Completed tasks deleted</string>
+    <string name="all_tasks_deleted">All tasks deleted</string>
+    <string name="notifications_permission_granted">Notifications permission granted</string>
+    <string name="notifications_permission_denied">Notifications permission denied</string>
+    <string name="permission_needed">Permission needed</string>
+    <string name="notification_permission_rationale">This permission is needed to show task reminders.</string>
+    <string name="ok">OK</string>
+    <string name="tab_all">All</string>
+    <string name="tab_active">Active</string>
+    <string name="tab_completed">Completed</string>
+    <string name="priority">Priority</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="set_reminder">Set reminder</string>
 </resources>

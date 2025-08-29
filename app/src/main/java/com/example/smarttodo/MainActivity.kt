@@ -1,22 +1,30 @@
 package com.example.smarttodo
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.smarttodo.data.Task
-import com.example.smarttodo.data.TaskDatabase
-import com.example.smarttodo.data.TaskRepository
 import com.example.smarttodo.databinding.ActivityMainBinding
-import com.example.smarttodo.ui.*
+import com.example.smarttodo.ui.AddTaskDialogFragment
+import com.example.smarttodo.ui.SwipeGestureHelper
+import com.example.smarttodo.ui.TaskAdapter
+import com.example.smarttodo.ui.TaskFilter
+import com.example.smarttodo.ui.TaskItemDecoration
+import com.example.smarttodo.ui.TaskViewModel
+import com.example.smarttodo.ui.TaskViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
@@ -33,6 +41,15 @@ class MainActivity : AppCompatActivity() {
         TaskViewModelFactory((application as SmartTodoApplication).repository)
     }
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Toast.makeText(this, getString(R.string.notifications_permission_granted), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, getString(R.string.notifications_permission_denied), Toast.LENGTH_SHORT).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -48,11 +65,36 @@ class MainActivity : AppCompatActivity() {
 
         // Apply saved theme
         applySavedTheme()
+
+        // Ask for notification permission
+        askNotificationPermission()
+    }
+
+    private fun askNotificationPermission() {
+        // This is only necessary for API level 33 and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                    // Explain to the user why you need the permission.
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.permission_needed))
+                        .setMessage(getString(R.string.notification_permission_rationale))
+                        .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show()
+                } else {
+                    // Directly ask for the permission.
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
     }
 
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.title = "Smart To-Do"
+        supportActionBar?.title = getString(R.string.app_name)
     }
 
     private fun setupRecyclerView() {
@@ -131,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             // Refresh data (in this case, just stop the loading animation)
             binding.swipeRefreshLayout.isRefreshing = false
-            Toast.makeText(this, "Tasks refreshed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.tasks_refreshed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -187,12 +229,16 @@ class MainActivity : AppCompatActivity() {
         taskViewModel.toggleTaskCompletion(task)
 
         // Show completion feedback
-        val message = if (task.isCompleted) "Task marked as incomplete" else "Task completed! 🎉"
+        val message = if (task.isCompleted) getString(R.string.task_incomplete) else getString(R.string.task_completed)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showTaskOptions(task: Task) {
-        val options = arrayOf("Edit", "Delete", "Duplicate")
+        val options = arrayOf(
+            getString(R.string.edit),
+            getString(R.string.delete),
+            getString(R.string.duplicate)
+        )
 
         MaterialAlertDialogBuilder(this)
             .setTitle(task.title)
@@ -208,25 +254,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun showDeleteConfirmation(task: Task) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Delete Task")
-            .setMessage("Are you sure you want to delete \"${task.title}\"?")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(R.string.delete_task_title)
+            .setMessage(getString(R.string.delete_task_message, task.title))
+            .setPositiveButton(R.string.delete) { _, _ ->
                 taskViewModel.delete(task)
-                Toast.makeText(this, "Task deleted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.task_deleted), Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
     private fun duplicateTask(task: Task) {
         val duplicatedTask = task.copy(
             id = 0, // New ID will be auto-generated
-            title = "${task.title} (Copy)",
+            title = "${task.title}${getString(R.string.task_title_copy_suffix)}",
             isCompleted = false,
             createdAt = java.util.Date()
         )
         taskViewModel.insert(duplicatedTask)
-        Toast.makeText(this, "Task duplicated", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.task_duplicated), Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -276,28 +322,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun showDeleteCompletedConfirmation() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Delete Completed Tasks")
-            .setMessage("Are you sure you want to delete all completed tasks?")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(R.string.delete_completed_tasks_title)
+            .setMessage(R.string.delete_completed_tasks_message)
+            .setPositiveButton(R.string.delete) { _, _ ->
                 taskViewModel.deleteCompletedTasks()
-                Toast.makeText(this, "Completed tasks deleted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.completed_tasks_deleted), Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
     private fun showDeleteAllConfirmation() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Delete All Tasks")
-            .setMessage("Are you sure you want to delete ALL tasks? This cannot be undone.")
-            .setPositiveButton("Delete All") { _, _ ->
+            .setTitle(R.string.delete_all_tasks_title)
+            .setMessage(R.string.delete_all_tasks_message)
+            .setPositiveButton(R.string.delete_all) { _, _ ->
                 lifecycleScope.launch {
                     // This is a destructive action, so we make it harder to access
                     taskViewModel.deleteAllTasks()
-                    Toast.makeText(this@MainActivity, "All tasks deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.all_tasks_deleted), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 }

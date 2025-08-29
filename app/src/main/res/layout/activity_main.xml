@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="Smart To-Do"
+            app:title="@string/app_name"
             app:titleTextColor="?attr/colorOnPrimary" />
 
         <com.google.android.material.tabs.TabLayout
@@ -25,25 +25,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
-            app:tabTextColor="?attr/colorOnPrimary"
-            app:tabSelectedTextColor="?attr/colorOnPrimary"
+            app:tabGravity="fill"
             app:tabMode="fixed"
-            app:tabGravity="fill">
+            app:tabSelectedTextColor="?attr/colorOnPrimary"
+            app:tabTextColor="?attr/colorOnPrimary">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All" />
+                android:text="@string/tab_all" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active" />
+                android:text="@string/tab_active" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed" />
+                android:text="@string/tab_completed" />
 
         </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -56,13 +56,13 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/searchInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Search tasks..."
-            app:startIconDrawable="@drawable/ic_search"
+            android:layout_margin="@dimen/spacing_medium"
+            android:hint="@string/search_hint"
             app:endIconMode="clear_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:startIconDrawable="@drawable/ic_search">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/searchEditText"
@@ -84,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:padding="8dp"
+                android:padding="@dimen/spacing_small"
                 tools:listitem="@layout/item_task" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -98,9 +98,9 @@
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginBottom="16dp"
+                android:layout_width="@dimen/empty_state_image_size"
+                android:layout_height="@dimen/empty_state_image_size"
+                android:layout_marginBottom="@dimen/spacing_medium"
                 android:alpha="0.6"
                 android:src="@drawable/ic_task_list"
                 app:tint="?attr/colorOnSurface" />
@@ -108,16 +108,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No tasks yet!"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
+                android:text="@string/no_tasks_title"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="@dimen/empty_state_title_size"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Tap the + button to add your first task"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:text="@string/no_tasks_subtitle"
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
         </LinearLayout>
@@ -128,8 +128,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="Add new task"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@string/add_task"
         app:srcCompat="@drawable/ic_add"
         app:tint="?attr/colorOnPrimary" />
 
