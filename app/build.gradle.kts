@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.smarttodo"
-    compileSdk = 35
+    compileSdk = 34
 
     buildFeatures {
         viewBinding = true
@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId = "com.example.smarttodo"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
