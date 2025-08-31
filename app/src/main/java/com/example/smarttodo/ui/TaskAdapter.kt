@@ -1,6 +1,7 @@
 package com.example.smarttodo.ui
 
 import android.graphics.Paint
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -82,12 +83,9 @@ class TaskAdapter(
                             )
                         )
                     } else {
-                        textViewDueDate.setTextColor(
-                            ContextCompat.getColor(
-                                root.context,
-                                R.color.text_secondary_light
-                            )
-                        )
+                        val typedValue = TypedValue()
+                        root.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+                        textViewDueDate.setTextColor(typedValue.data)
                     }
                 } ?: run {
                     layoutDueDate.visibility = android.view.View.GONE
