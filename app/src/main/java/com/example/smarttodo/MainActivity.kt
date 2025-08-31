@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,9 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskAdapter: TaskAdapter
-    private val taskViewModel: TaskViewModel by viewModels {
-        TaskViewModelFactory((application as SmartTodoApplication).repository)
-    }
+    private lateinit var taskViewModel: TaskViewModel
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -52,22 +51,35 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        try {
+            // Manually initialize ViewModel to catch potential errors during initialization
+            val viewModelFactory = TaskViewModelFactory((application as SmartTodoApplication).repository)
+            taskViewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
 
-        setupToolbar()
-        setupRecyclerView()
-        setupFab()
-        setupTabs()
-        setupSearch()
-        setupSwipeRefresh()
-        observeViewModel()
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-        // Apply saved theme
-        applySavedTheme()
+            setupToolbar()
+            setupRecyclerView()
+            setupFab()
+            setupTabs()
+            setupSearch()
+            setupSwipeRefresh()
+            observeViewModel()
 
-        // Ask for notification permission
-        askNotificationPermission()
+            // Apply saved theme
+            applySavedTheme()
+
+            // Ask for notification permission
+            askNotificationPermission()
+        } catch (e: Throwable) {
+            // Display a dialog with the error details for debugging
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Startup Error")
+                .setMessage(e.stackTraceToString())
+                .setPositiveButton("OK", null)
+                .show()
+        }
     }
 
     private fun askNotificationPermission() {
