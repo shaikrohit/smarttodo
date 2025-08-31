@@ -13,7 +13,9 @@ data class Task(
     val description: String = "",
     val priority: Int = 1,
     val isCompleted: Boolean = false,
-    val createdAt: Date = Date(),
+    // This is nullable to prevent crashes from legacy data that might have null creation dates.
+    // The app ensures new tasks always have a non-null date.
+    val createdAt: Date? = Date(),
     val dueDate: Date? = null,
     val hasReminder: Boolean = false
 ) : Serializable
