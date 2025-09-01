@@ -41,7 +41,7 @@ class SwipeGestureHelper(
         val isCanceled = dX == 0f && !isCurrentlyActive
 
         if (isCanceled) {
-            // clearCanvas(c, itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+            clearCanvas(c, itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             return
         }

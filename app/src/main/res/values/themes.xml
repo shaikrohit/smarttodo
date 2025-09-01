@@ -11,6 +11,7 @@
         <item name="colorSurface">@color/surface_light</item>
         <item name="colorOnBackground">@color/text_primary_light</item>
         <item name="colorOnSurface">@color/text_primary_light</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_light</item>
         <item name="android:statusBarColor">@color/primary_dark</item>
     </style>
 
