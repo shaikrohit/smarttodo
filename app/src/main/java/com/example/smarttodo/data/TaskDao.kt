@@ -11,17 +11,8 @@ import androidx.room.Update
 @Dao
 interface TaskDao {
 
-    @Query("SELECT * FROM tasks ORDER BY priority DESC, createdAt ASC")
-    fun getAllTasks(): LiveData<List<Task>>
-
-    @Query("SELECT * FROM tasks WHERE isCompleted = 0 ORDER BY priority DESC, createdAt ASC")
-    fun getIncompleteTasks(): LiveData<List<Task>>
-
-    @Query("SELECT * FROM tasks WHERE isCompleted = 1 ORDER BY createdAt DESC")
-    fun getCompletedTasks(): LiveData<List<Task>>
-
-    @Query("SELECT * FROM tasks WHERE title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' ORDER BY priority DESC")
-    fun searchTasks(searchQuery: String): LiveData<List<Task>>
+    @Query("SELECT * FROM tasks WHERE (:isCompleted IS NULL OR isCompleted = :isCompleted) AND (title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%') ORDER BY priority DESC, createdAt ASC")
+    fun getTasks(searchQuery: String, isCompleted: Boolean?): LiveData<List<Task>>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     suspend fun getTaskById(taskId: Int): Task?

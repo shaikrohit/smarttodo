@@ -6,11 +6,9 @@ import kotlinx.coroutines.withContext
 
 class TaskRepository(private val taskDao: TaskDao) {
 
-    val allTasks: LiveData<List<Task>> = taskDao.getAllTasks()
-    val incompleteTasks: LiveData<List<Task>> = taskDao.getIncompleteTasks()
-    val completedTasks: LiveData<List<Task>> = taskDao.getCompletedTasks()
-
-    fun searchTasks(query: String): LiveData<List<Task>> = taskDao.searchTasks(query)
+    fun getTasks(query: String, isCompleted: Boolean?): LiveData<List<Task>> {
+        return taskDao.getTasks(query, isCompleted)
+    }
 
     suspend fun getTaskById(taskId: Int): Task? {
         return withContext(Dispatchers.IO) {
