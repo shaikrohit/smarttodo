@@ -11,14 +11,14 @@ data class Task(
     val id: Int = 0,
     val title: String,
     val description: String = "",
-    val priority: Int = 1,
+    val priority: Priority = Priority.LOW,
     val isCompleted: Boolean = false,
     val createdAt: Date = Date(),
     val dueDate: Date? = null,
     val hasReminder: Boolean = false
 ) : Serializable
 
-enum class Priority(val value: Int, val displayName: String) : Serializable {
+enum class Priority(val value: Int, val displayName: String) {
     LOW(1, "Low"),
     MEDIUM(2, "Medium"),
     HIGH(3, "High")

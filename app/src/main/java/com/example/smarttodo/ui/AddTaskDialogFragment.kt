@@ -79,9 +79,9 @@ class AddTaskDialogFragment : DialogFragment() {
                 editTextDescription.setText(task.description)
 
                 when (task.priority) {
-                    Priority.LOW.value -> radioLowPriority.isChecked = true
-                    Priority.MEDIUM.value -> radioMediumPriority.isChecked = true
-                    Priority.HIGH.value -> radioHighPriority.isChecked = true
+                    Priority.LOW -> radioLowPriority.isChecked = true
+                    Priority.MEDIUM -> radioMediumPriority.isChecked = true
+                    Priority.HIGH -> radioHighPriority.isChecked = true
                 }
 
                 task.dueDate?.let {
@@ -159,10 +159,10 @@ class AddTaskDialogFragment : DialogFragment() {
         }
 
         val priority = when (binding.radioGroupPriority.checkedRadioButtonId) {
-            R.id.radioLowPriority -> Priority.LOW.value
-            R.id.radioMediumPriority -> Priority.MEDIUM.value
-            R.id.radioHighPriority -> Priority.HIGH.value
-            else -> Priority.LOW.value
+            R.id.radioLowPriority -> Priority.LOW
+            R.id.radioMediumPriority -> Priority.MEDIUM
+            R.id.radioHighPriority -> Priority.HIGH
+            else -> Priority.LOW
         }
         val hasReminder = binding.switchReminder.isChecked
 
