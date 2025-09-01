@@ -29,10 +29,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
-/**
- * Main activity for the Smart To-Do app
- * Handles the main UI and user interactions
- */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -63,19 +59,14 @@ class MainActivity : AppCompatActivity() {
         setupSwipeRefresh()
         observeViewModel()
 
-        // Apply saved theme
         applySavedTheme()
-
-        // Ask for notification permission
         askNotificationPermission()
     }
 
     private fun askNotificationPermission() {
-        // This is only necessary for API level 33 and above.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                    // Explain to the user why you need the permission.
                     MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.permission_needed))
                         .setMessage(getString(R.string.notification_permission_rationale))
@@ -85,7 +76,6 @@ class MainActivity : AppCompatActivity() {
                         .setNegativeButton(getString(R.string.cancel), null)
                         .show()
                 } else {
-                    // Directly ask for the permission.
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
@@ -107,12 +97,9 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerViewTasks.apply {
             adapter = taskAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
-
-            // Add item decoration for spacing
             addItemDecoration(TaskItemDecoration(resources.getDimensionPixelSize(R.dimen.task_item_spacing)))
         }
 
-        // Setup swipe gestures
         setupSwipeGestures()
     }
 
@@ -155,51 +142,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearch() {
         binding.searchEditText.addTextChangedListener { text ->
-            val query = text.toString().trim()
-            if (query.isEmpty()) {
-                // Show filtered tasks based on current tab
-                observeCurrentTasks()
-            } else {
-                // Show search results
-                taskViewModel.searchTasks(query).observe(this) { tasks ->
-                    taskAdapter.submitList(tasks)
-                    updateEmptyState(tasks.isEmpty())
-                }
-            }
+            taskViewModel.setSearchQuery(text.toString().trim())
         }
     }
 
     private fun setupSwipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            // Refresh data (in this case, just stop the loading animation)
             binding.swipeRefreshLayout.isRefreshing = false
             Toast.makeText(this, getString(R.string.tasks_refreshed), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun observeViewModel() {
-        // Observe loading state
         taskViewModel.isLoading.observe(this) { isLoading ->
             binding.swipeRefreshLayout.isRefreshing = isLoading
         }
 
-        // Observe current filter and show appropriate tasks
-        taskViewModel.currentFilter.observe(this) {
-            observeCurrentTasks()
-        }
-
-        // Initial load
-        observeCurrentTasks()
-    }
-
-    private fun observeCurrentTasks() {
-        // Remove previous observers to prevent multiple subscriptions
-        taskViewModel.allTasks.removeObservers(this)
-        taskViewModel.incompleteTasks.removeObservers(this)
-        taskViewModel.completedTasks.removeObservers(this)
-
-        // Observe the current task list based on filter
-        taskViewModel.getCurrentTasks().observe(this) { tasks ->
+        taskViewModel.tasks.observe(this) { tasks ->
             taskAdapter.submitList(tasks)
             updateEmptyState(tasks.isEmpty())
         }
@@ -227,8 +186,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleTaskCompletion(task: Task) {
         taskViewModel.toggleTaskCompletion(task)
-
-        // Show completion feedback
         val message = if (task.isCompleted) getString(R.string.task_incomplete) else getString(R.string.task_completed)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
@@ -306,11 +263,9 @@ class MainActivity : AppCompatActivity() {
             AppCompatDelegate.MODE_NIGHT_YES
         }
 
-        // Save theme preference
         val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
         sharedPref.edit().putInt("theme_mode", newMode).apply()
 
-        // Apply new theme
         AppCompatDelegate.setDefaultNightMode(newMode)
     }
 
@@ -338,7 +293,6 @@ class MainActivity : AppCompatActivity() {
             .setMessage(R.string.delete_all_tasks_message)
             .setPositiveButton(R.string.delete_all) { _, _ ->
                 lifecycleScope.launch {
-                    // This is a destructive action, so we make it harder to access
                     taskViewModel.deleteAllTasks()
                     Toast.makeText(this@MainActivity, getString(R.string.all_tasks_deleted), Toast.LENGTH_SHORT).show()
                 }
