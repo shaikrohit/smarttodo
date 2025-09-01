@@ -8,9 +8,12 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.smarttodo.data.Task
 import com.example.smarttodo.data.TaskRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
+@HiltViewModel
+class TaskViewModel @Inject constructor(private val repository: TaskRepository) : ViewModel() {
 
     private val _currentFilter = MutableLiveData(TaskFilter.ALL)
     private val _searchQuery = MutableLiveData("")
@@ -36,32 +39,61 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _error = SingleLiveEvent<String>()
+    val error: LiveData<String> = _error
+
     fun insert(task: Task) = viewModelScope.launch {
-        _isLoading.value = true
-        repository.insert(task)
-        _isLoading.value = false
+        try {
+            _isLoading.value = true
+            repository.insert(task)
+        } catch (e: Exception) {
+            _error.value = "Failed to insert task"
+        } finally {
+            _isLoading.value = false
+        }
     }
 
     fun update(task: Task) = viewModelScope.launch {
-        repository.update(task)
+        try {
+            repository.update(task)
+        } catch (e: Exception) {
+            _error.value = "Failed to update task"
+        }
     }
 
     fun delete(task: Task) = viewModelScope.launch {
-        repository.delete(task)
+        try {
+            repository.delete(task)
+        } catch (e: Exception) {
+            _error.value = "Failed to delete task"
+        }
     }
 
     fun toggleTaskCompletion(task: Task) = viewModelScope.launch {
-        repository.toggleTaskCompletion(task.id)
+        try {
+            repository.toggleTaskCompletion(task.id)
+        } catch (e: Exception) {
+            _error.value = "Failed to toggle task completion"
+        }
     }
 
     fun deleteCompletedTasks() = viewModelScope.launch {
-        repository.deleteCompletedTasks()
+        try {
+            repository.deleteCompletedTasks()
+        } catch (e: Exception) {
+            _error.value = "Failed to delete completed tasks"
+        }
     }
 
     fun deleteAllTasks() = viewModelScope.launch {
-        _isLoading.value = true
-        repository.deleteAllTasks()
-        _isLoading.value = false
+        try {
+            _isLoading.value = true
+            repository.deleteAllTasks()
+        } catch (e: Exception) {
+            _error.value = "Failed to delete all tasks"
+        } finally {
+            _isLoading.value = false
+        }
     }
 
     fun setFilter(filter: TaskFilter) {
@@ -71,10 +103,4 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
-}
-
-enum class TaskFilter(val displayName: String) {
-    ALL("All"),
-    INCOMPLETE("Active"),
-    COMPLETED("Completed")
 }

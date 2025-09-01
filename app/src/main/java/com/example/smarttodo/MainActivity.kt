@@ -26,16 +26,18 @@ import com.example.smarttodo.ui.TaskItemDecoration
 import com.example.smarttodo.ui.TaskViewModel
 import com.example.smarttodo.ui.TaskViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.example.smarttodo.util.Constants
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskAdapter: TaskAdapter
-    private val taskViewModel: TaskViewModel by viewModels {
-        TaskViewModelFactory((application as SmartTodoApplication).repository)
-    }
+    private val taskViewModel: TaskViewModel by viewModels()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -162,6 +164,12 @@ class MainActivity : AppCompatActivity() {
             taskAdapter.submitList(tasks)
             updateEmptyState(tasks.isEmpty())
         }
+
+        taskViewModel.error.observe(this) { error ->
+            error?.let {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun updateEmptyState(isEmpty: Boolean) {
@@ -263,15 +271,15 @@ class MainActivity : AppCompatActivity() {
             AppCompatDelegate.MODE_NIGHT_YES
         }
 
-        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        sharedPref.edit().putInt("theme_mode", newMode).apply()
+        val sharedPref = getSharedPreferences(Constants.APP_PREFERENCES, MODE_PRIVATE)
+        sharedPref.edit().putInt(Constants.THEME_MODE_KEY, newMode).apply()
 
         AppCompatDelegate.setDefaultNightMode(newMode)
     }
 
     private fun applySavedTheme() {
-        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val savedTheme = sharedPref.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val sharedPref = getSharedPreferences(Constants.APP_PREFERENCES, MODE_PRIVATE)
+        val savedTheme = sharedPref.getInt(Constants.THEME_MODE_KEY, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(savedTheme)
     }
 
