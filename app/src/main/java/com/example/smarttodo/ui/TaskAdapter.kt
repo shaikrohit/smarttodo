@@ -94,10 +94,9 @@ class TaskAdapter(
                 }
                 // Priority color
                 val priorityColor = when (task.priority) {
-                    Priority.HIGH.value -> R.color.priority_high
-                    Priority.MEDIUM.value -> R.color.priority_medium
-                    Priority.LOW.value -> R.color.priority_low
-                    else -> R.color.priority_low
+                    Priority.HIGH -> R.color.priority_high
+                    Priority.MEDIUM -> R.color.priority_medium
+                    Priority.LOW -> R.color.priority_low
                 }
                 viewPriorityIndicator.setBackgroundColor(
                     ContextCompat.getColor(root.context, priorityColor)
