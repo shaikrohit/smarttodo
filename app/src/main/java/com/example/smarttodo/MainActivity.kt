@@ -24,7 +24,6 @@ import com.example.smarttodo.ui.TaskAdapter
 import com.example.smarttodo.ui.TaskFilter
 import com.example.smarttodo.ui.TaskItemDecoration
 import com.example.smarttodo.ui.TaskViewModel
-import com.example.smarttodo.ui.TaskViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.example.smarttodo.util.Constants
