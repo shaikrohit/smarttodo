@@ -22,11 +22,18 @@ class TaskAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ?: throw IllegalStateException("Binding cannot be null. Check item_task.xml")
         return TaskViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val task = getItem(position)
+        if (task == null) {
+            // Log an error or handle the null case
+            // For now, we'll just return and not bind the view
+            return
+        }
+        holder.bind(task)
     }
 
     fun getTaskAt(position: Int): Task = getItem(position)
