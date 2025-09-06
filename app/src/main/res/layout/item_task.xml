@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/description_margin_top"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="@dimen/text_size_medium"
                 android:visibility="gone"
                 tools:text="Sample task description here"
@@ -63,13 +63,13 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/icon_margin_end"
                     android:src="@drawable/ic_schedule"
-                    app:tint="?attr/colorOnSurfaceVariant" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/textViewDueDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="@dimen/text_size_small"
                     tools:text="Due: Tomorrow 3:00 PM" />
 
@@ -94,7 +94,7 @@
             android:contentDescription="@string/more_options"
             android:padding="@dimen/spacing_small"
             android:src="@drawable/ic_more_vert"
-            app:tint="?attr/colorOnSurfaceVariant" />
+            app:tint="?attr/colorOnSurface" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

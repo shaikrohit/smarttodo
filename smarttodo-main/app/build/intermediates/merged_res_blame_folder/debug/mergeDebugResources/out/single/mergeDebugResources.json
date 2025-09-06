@@ -1,0 +1,122 @@
+[
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_more_vert.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_more_vert.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/layout_item_task.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/layout/item_task.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_delete.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_delete.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_schedule.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_schedule.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_add.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_add.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/menu_main_menu.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/menu/main_menu.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/layout_dialog_add_task.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/layout/dialog_add_task.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/xml_backup_rules.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_priority_indicator_background.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/priority_indicator_background.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_theme_toggle.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_theme_toggle.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_task_list.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_task_list.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_check.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_check.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_search.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_search.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/xml_data_extraction_rules.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/layout_activity_main.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_notification.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_notification.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.example.smarttodo.app-main-46:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-debug-44:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.smarttodo.app-main-46:/mipmap-xhdpi/ic_launcher_round.webp"
+    }
+]

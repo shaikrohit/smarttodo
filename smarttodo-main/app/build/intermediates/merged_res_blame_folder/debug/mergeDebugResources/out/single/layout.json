@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.example.smarttodo.app-mergeDebugResources-43:/layout/activity_main.xml",
+        "source": "com.example.smarttodo.app-main-46:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-mergeDebugResources-43:/layout/item_task.xml",
+        "source": "com.example.smarttodo.app-main-46:/layout/item_task.xml"
+    },
+    {
+        "merged": "com.example.smarttodo.app-mergeDebugResources-43:/layout/dialog_add_task.xml",
+        "source": "com.example.smarttodo.app-main-46:/layout/dialog_add_task.xml"
+    }
+]
