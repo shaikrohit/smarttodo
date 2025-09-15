@@ -46,6 +46,14 @@
     <string name="permission_needed">Permission needed</string>
     <string name="notification_permission_rationale">This permission is needed to show task reminders.</string>
     <string name="ok">OK</string>
+    <string name="error_generic">An error occurred. Please try again.</string>
+
+    <!-- Date/Time formatting strings -->
+    <string name="date_time_format_item" translatable="false">MMM dd, hh:mm a</string>
+    <string name="due_date_prefix_item">Due: %1$s</string>
+    <string name="date_time_format_display" translatable="false">MMM dd, yyyy \'at\' hh:mm a</string>
+    <string name="due_date_prefix_display">Due: %1$s</string>
+
     <string name="tab_all">All</string>
     <string name="tab_active">Active</string>
     <string name="tab_completed">Completed</string>
@@ -53,4 +61,17 @@
     <string name="select_date">Select Date</string>
     <string name="select_time">Select Time</string>
     <string name="set_reminder">Set reminder</string>
+    <string name="pomodoro_timer">Pomodoro Timer</string>
+    <string name="task_type">Task Type</string>
+    <string name="task_type_creative">Creative</string>
+    <string name="task_type_analytical">Analytical</string>
+    <string name="task_type_administrative">Administrative</string>
+        <!-- Other strings -->
+        <string name="pomodoro_timer_default_title">Pomodoro Timer</string>
+        <!-- Add these lines -->
+        <string name="button_pause">Pause</string>
+        <string name="button_resume">Resume</string>
+        <string name="button_start">Start</string>
+
+        <!-- <string name="app_name">smarttodo</string> -->
 </resources>

@@ -91,6 +91,43 @@
     </RadioGroup>
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:text="@string/task_type"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="@dimen/text_size_large"
+        android:textStyle="bold" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupTaskType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipCreative"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/task_type_creative" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAnalytical"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/task_type_analytical" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAdministrative"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/task_type_administrative" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
         android:id="@+id/textViewSelectedDateTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -143,7 +180,8 @@
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchReminder"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/set_reminder" />
 
     </LinearLayout>
 

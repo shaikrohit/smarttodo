@@ -88,40 +88,25 @@
                 tools:listitem="@layout/item_task" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <LinearLayout
-            android:id="@+id/emptyStateLayout"
+        <ViewStub
+            android:id="@+id/emptyStateViewStub"
+            android:layout="@layout/layout_empty_state"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="@dimen/empty_state_image_size"
-                android:layout_height="@dimen/empty_state_image_size"
-                android:layout_marginBottom="@dimen/spacing_medium"
-                android:alpha="0.6"
-                android:src="@drawable/ic_task_list"
-                app:tint="?attr/colorOnSurface" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_tasks_title"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="@dimen/empty_state_title_size"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_small"
-                android:text="@string/no_tasks_subtitle"
-                android:textColor="?android:attr/textColorSecondary" />
-
-        </LinearLayout>
+            android:layout_weight="1" />
+            
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabPomodoro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="88dp"
+        android:contentDescription="@string/pomodoro_timer"
+        app:srcCompat="@drawable/ic_timer"
+        app:tint="?attr/colorOnPrimary" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddTask"

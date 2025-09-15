@@ -1,21 +1,24 @@
 package com.example.smarttodo
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.smarttodo.data.Task
 import com.example.smarttodo.databinding.ActivityMainBinding
 import com.example.smarttodo.ui.AddTaskDialogFragment
@@ -25,25 +28,30 @@ import com.example.smarttodo.ui.TaskFilter
 import com.example.smarttodo.ui.TaskItemDecoration
 import com.example.smarttodo.ui.TaskViewModel
 import com.example.smarttodo.ui.TaskViewModelFactory
+import com.example.smarttodo.ui.UserMessage // Import UserMessage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar // Import Snackbar
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.launch
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskAdapter: TaskAdapter
+    private var inflatedEmptyState: View? = null
+
     private val taskViewModel: TaskViewModel by viewModels {
         TaskViewModelFactory((application as SmartTodoApplication).repository)
     }
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                Toast.makeText(this, getString(R.string.notifications_permission_granted), Toast.LENGTH_SHORT).show()
+            val messageResId = if (isGranted) {
+                R.string.notifications_permission_granted
             } else {
-                Toast.makeText(this, getString(R.string.notifications_permission_denied), Toast.LENGTH_SHORT).show()
+                R.string.notifications_permission_denied
             }
+            Toast.makeText(this, getString(messageResId), Toast.LENGTH_SHORT).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +73,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                     MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.permission_needed))
@@ -93,28 +103,27 @@ class MainActivity : AppCompatActivity() {
             onTaskLongClick = { task -> showTaskOptions(task) },
             onCompleteClick = { task -> toggleTaskCompletion(task) }
         )
-
         binding.recyclerViewTasks.apply {
             adapter = taskAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
             addItemDecoration(TaskItemDecoration(resources.getDimensionPixelSize(R.dimen.task_item_spacing)))
         }
-
         setupSwipeGestures()
     }
 
     private fun setupSwipeGestures() {
         val swipeGestureHelper = SwipeGestureHelper(
             onSwipeRight = { position ->
-                val task = taskAdapter.getTaskAt(position)
-                toggleTaskCompletion(task)
+                if (position != RecyclerView.NO_POSITION) {
+                    taskAdapter.getTaskAt(position)?.let { toggleTaskCompletion(it) }
+                }
             },
             onSwipeLeft = { position ->
-                val task = taskAdapter.getTaskAt(position)
-                showDeleteConfirmation(task)
+                if (position != RecyclerView.NO_POSITION) {
+                    taskAdapter.getTaskAt(position)?.let { showDeleteConfirmation(it) }
+                }
             }
         )
-
         val itemTouchHelper = ItemTouchHelper(swipeGestureHelper)
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewTasks)
     }
@@ -123,20 +132,25 @@ class MainActivity : AppCompatActivity() {
         binding.fabAddTask.setOnClickListener {
             showAddTaskDialog()
         }
+        binding.fabPomodoro.setOnClickListener {
+            val intent = Intent(this, PomodoroActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupTabs() {
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> taskViewModel.setFilter(TaskFilter.ALL)
-                    1 -> taskViewModel.setFilter(TaskFilter.INCOMPLETE)
-                    2 -> taskViewModel.setFilter(TaskFilter.COMPLETED)
+                val filter = when (tab?.position) {
+                    0 -> TaskFilter.ALL
+                    1 -> TaskFilter.INCOMPLETE
+                    2 -> TaskFilter.COMPLETED
+                    else -> TaskFilter.ALL
                 }
+                taskViewModel.setFilter(filter)
             }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
+            override fun onTabUnselected(tab: TabLayout.Tab?) { /* No action */ }
+            override fun onTabReselected(tab: TabLayout.Tab?) { /* No action */ }
         })
     }
 
@@ -157,37 +171,50 @@ class MainActivity : AppCompatActivity() {
         taskViewModel.isLoading.observe(this) { isLoading ->
             binding.swipeRefreshLayout.isRefreshing = isLoading
         }
-
         taskViewModel.tasks.observe(this) { tasks ->
             taskAdapter.submitList(tasks)
             updateEmptyState(tasks.isEmpty())
+        }
+
+        // Observe UserMessage events for showing Toasts or Snackbars
+        taskViewModel.userMessageEvent.observe(this) { event ->
+            event.getContentIfNotHandled()?.let { userMessage ->
+                val messageText = userMessage.customMessage ?: getString(userMessage.messageResId!!)
+                if (userMessage.isError) {
+                    Snackbar.make(binding.root, messageText, Snackbar.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, messageText, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
     private fun updateEmptyState(isEmpty: Boolean) {
         if (isEmpty) {
-            binding.recyclerViewTasks.visibility = android.view.View.GONE
-            binding.emptyStateLayout.visibility = android.view.View.VISIBLE
+            binding.recyclerViewTasks.visibility = View.GONE
+            if (inflatedEmptyState == null) {
+                inflatedEmptyState = binding.emptyStateViewStub.inflate()
+            }
+            inflatedEmptyState?.visibility = View.VISIBLE
         } else {
-            binding.recyclerViewTasks.visibility = android.view.View.VISIBLE
-            binding.emptyStateLayout.visibility = android.view.View.GONE
+            binding.recyclerViewTasks.visibility = View.VISIBLE
+            inflatedEmptyState?.visibility = View.GONE
         }
     }
 
     private fun showAddTaskDialog() {
         val dialog = AddTaskDialogFragment()
-        dialog.show(supportFragmentManager, "AddTaskDialog")
+        dialog.show(supportFragmentManager, AddTaskDialogFragment.TAG_ADD)
     }
 
     private fun editTask(task: Task) {
         val dialog = AddTaskDialogFragment.newInstance(task)
-        dialog.show(supportFragmentManager, "EditTaskDialog")
+        dialog.show(supportFragmentManager, AddTaskDialogFragment.TAG_EDIT)
     }
 
     private fun toggleTaskCompletion(task: Task) {
         taskViewModel.toggleTaskCompletion(task)
-        val message = if (task.isCompleted) getString(R.string.task_incomplete) else getString(R.string.task_completed)
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        // Toast is now handled by observing userMessageEvent from ViewModel
     }
 
     private fun showTaskOptions(task: Task) {
@@ -196,7 +223,6 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.delete),
             getString(R.string.duplicate)
         )
-
         MaterialAlertDialogBuilder(this)
             .setTitle(task.title)
             .setItems(options) { _, which ->
@@ -209,27 +235,49 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showDeleteConfirmation(task: Task) {
+    private fun showConfirmationDialog(
+        @StringRes titleResId: Int,
+        @StringRes messageResId: Int,
+        @StringRes positiveButtonResId: Int = R.string.delete,
+        messageArgs: Array<Any>? = null,
+        onConfirm: () -> Unit
+    ) {
+        val message = if (messageArgs != null) {
+            getString(messageResId, *messageArgs)
+        } else {
+            getString(messageResId)
+        }
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_task_title)
-            .setMessage(getString(R.string.delete_task_message, task.title))
-            .setPositiveButton(R.string.delete) { _, _ ->
-                taskViewModel.delete(task)
-                Toast.makeText(this, getString(R.string.task_deleted), Toast.LENGTH_SHORT).show()
+            .setTitle(getString(titleResId))
+            .setMessage(message)
+            .setPositiveButton(getString(positiveButtonResId)) { _, _ ->
+                onConfirm()
             }
-            .setNegativeButton(R.string.cancel, null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun showDeleteConfirmation(task: Task) {
+        showConfirmationDialog(
+            titleResId = R.string.delete_task_title,
+            messageResId = R.string.delete_task_message,
+            messageArgs = arrayOf(task.title),
+            onConfirm = {
+                taskViewModel.delete(task)
+                // Toast for R.string.task_deleted is now handled by userMessageEvent
+            }
+        )
     }
 
     private fun duplicateTask(task: Task) {
         val duplicatedTask = task.copy(
-            id = 0, // New ID will be auto-generated
+            id = 0,
             title = "${task.title}${getString(R.string.task_title_copy_suffix)}",
             isCompleted = false,
-            createdAt = java.util.Date()
+            createdAt = Date()
         )
         taskViewModel.insert(duplicatedTask)
-        Toast.makeText(this, getString(R.string.task_duplicated), Toast.LENGTH_SHORT).show()
+        // Toast for R.string.task_duplicated is now handled by userMessageEvent
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -256,48 +304,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleTheme() {
-        val currentMode = AppCompatDelegate.getDefaultNightMode()
-        val newMode = if (currentMode == AppCompatDelegate.MODE_NIGHT_YES) {
+        val currentNightMode = AppCompatDelegate.getDefaultNightMode()
+        val newNightMode = if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             AppCompatDelegate.MODE_NIGHT_NO
         } else {
             AppCompatDelegate.MODE_NIGHT_YES
         }
-
         val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        sharedPref.edit().putInt("theme_mode", newMode).apply()
-
-        AppCompatDelegate.setDefaultNightMode(newMode)
+        sharedPref.edit().putInt("theme_mode", newNightMode).apply()
+        AppCompatDelegate.setDefaultNightMode(newNightMode)
     }
 
     private fun applySavedTheme() {
         val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val savedTheme = sharedPref.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        AppCompatDelegate.setDefaultNightMode(savedTheme)
+        val savedThemeMode = sharedPref.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(savedThemeMode)
     }
 
     private fun showDeleteCompletedConfirmation() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_completed_tasks_title)
-            .setMessage(R.string.delete_completed_tasks_message)
-            .setPositiveButton(R.string.delete) { _, _ ->
+        showConfirmationDialog(
+            titleResId = R.string.delete_completed_tasks_title,
+            messageResId = R.string.delete_completed_tasks_message,
+            onConfirm = {
                 taskViewModel.deleteCompletedTasks()
-                Toast.makeText(this, getString(R.string.completed_tasks_deleted), Toast.LENGTH_SHORT).show()
+                // Toast for R.string.completed_tasks_deleted is now handled by userMessageEvent
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        )
     }
 
     private fun showDeleteAllConfirmation() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.delete_all_tasks_title)
-            .setMessage(R.string.delete_all_tasks_message)
-            .setPositiveButton(R.string.delete_all) { _, _ ->
-                lifecycleScope.launch {
-                    taskViewModel.deleteAllTasks()
-                    Toast.makeText(this@MainActivity, getString(R.string.all_tasks_deleted), Toast.LENGTH_SHORT).show()
-                }
+        showConfirmationDialog(
+            titleResId = R.string.delete_all_tasks_title,
+            messageResId = R.string.delete_all_tasks_message,
+            positiveButtonResId = R.string.delete_all,
+            onConfirm = {
+                taskViewModel.deleteAllTasks()
+                // Toast for R.string.all_tasks_deleted is now handled by userMessageEvent
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        )
     }
 }
