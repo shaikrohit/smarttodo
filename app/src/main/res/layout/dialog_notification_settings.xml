@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/textViewDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/notification_settings_title" 
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:layout_marginBottom="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupSoundMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/radioButtonDefaultSound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notification_sound_mode_default"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonCustomSound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notification_sound_mode_custom"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonSilent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notification_sound_mode_silent"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonSelectSound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notification_select_custom_sound"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" 
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textCurrentSound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notification_current_sound_prefix"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/textViewSnoozeDurationLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notification_snooze_duration_label" 
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextSnoozeDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/notification_snooze_duration_hint" 
+        android:inputType="number"
+        android:maxLength="3"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/buttonClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_close"
+        style="@style/Widget.MaterialComponents.Button.TextButton" 
+        android:layout_gravity="end"/>
+
+</LinearLayout>

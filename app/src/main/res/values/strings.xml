@@ -25,7 +25,7 @@
     <string name="delete">Delete</string>
     <string name="duplicate">Duplicate</string>
     <string name="delete_task_title">Delete Task</string>
-    <string name="delete_task_message">Are you sure you want to delete "%1$s"?</string>
+    <string name="delete_task_message">Are you sure you want to delete \"%1$s\"?</string>
     <string name="toggle_theme">Toggle theme</string>
     <string name="delete_completed_tasks">Delete completed tasks</string>
     <string name="delete_all_tasks">Delete all tasks</string>
@@ -74,4 +74,62 @@
         <string name="button_start">Start</string>
 
         <!-- <string name="app_name">smarttodo</string> -->
+    <string name="channel_name">Task Reminders</string>
+    <string name="channel_description">Notifications for task deadlines and reminders</string>
+    <string name="default_task_reminder_content">Task upcoming!</string>
+
+    <!-- Notification Settings Dialog Strings -->
+    <string name="notification_settings_title">Notification Sound</string>
+    <string name="notification_sound_mode_default">Default System Sound</string>
+    <string name="notification_sound_mode_custom">Custom Sound</string>
+    <string name="notification_sound_mode_silent">Silent (Vibrate Only)</string>
+    <string name="notification_select_custom_sound">Select Custom Sound</string>
+    <string name="notification_current_sound_prefix">Current Sound: </string>
+    <string name="notification_sound_display_default">Default</string>
+    <string name="notification_sound_display_silent">Silent (Vibrate Only)</string>
+    <string name="notification_sound_display_custom_prefix">Custom: </string>
+    <string name="notification_sound_display_unknown">Unknown</string>
+    <string name="dialog_close">Close</string>
+
+    <!-- Notification Action Strings -->
+    <string name="notification_action_complete">Mark as Complete</string>
+    <string name="notification_action_snooze">Snooze (5 min)</string>
+
+    <!-- Pre-Reminder Strings -->
+    <string name="label_pre_reminder">Pre-reminder</string>
+    <string name="pre_reminder_option_custom">Custom</string>
+    <string-array name="pre_reminder_options">
+        <item>No pre-reminder</item>
+        <item>5 minutes before</item>
+        <item>15 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
+        <item>@string/pre_reminder_option_custom</item>
+    </string-array>
+
+    <!-- Notification Pre-Reminder Titles -->
+    <string name="pre_reminder_title_dynamic" formatted="true">Upcoming: %1$s (%2$s minutes before)</string>
+    <string name="pre_reminder_title_generic" formatted="true">Upcoming: %1$s</string>
+
+    <!-- Custom Pre-Reminder Dialog Strings -->
+    <string name="custom_pre_reminder_dialog_title">Set Custom Pre-Reminder</string>
+    <string name="custom_pre_reminder_input_hint">Minutes before due date</string>
+    <string name="custom_pre_reminder_error_invalid_input">Please enter a valid number of minutes (1-1440).</string>
+    <string name="custom_pre_reminder_set_button">Set</string>
+    <string name="custom_pre_reminder_dynamic_spinner_text" formatted="true">Custom (%1$d min before)</string>
+
+    <!-- Sound Selection Strings -->
+    <string name="select_reminder_sound">Select Reminder Sound</string>
+    <string name="selected_sound_name_prefix">Selected: </string>
+    <string name="default_sound_name">Default system sound</string>
+
+    <!-- Snooze Duration Settings -->
+    <string name="notification_snooze_duration_label">Snooze Duration (minutes)</string>
+    <string name="notification_snooze_duration_hint">5</string>
+
+    <!-- Error Messages -->
+    <string name="error_saving_task_critical">Error: Could not save the task. Critical failure.</string>
+    <string name="error_scheduling_reminder_after_insert">Task saved, but an error occurred scheduling the reminder.</string>
+    <string name="error_task_not_found_for_toggle">Error: Could not find the task to update.</string>
+
 </resources>

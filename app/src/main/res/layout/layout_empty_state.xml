@@ -13,13 +13,13 @@
         android:alpha="0.6"
         android:src="@drawable/ic_task_list"
         android:contentDescription="@string/no_tasks_title"
-        app:tint="?attr/colorOnSurface" />
+        app:tint="@color/text_primary_light" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_tasks_title"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/text_primary_light"
         android:textSize="@dimen/empty_state_title_size"
         android:textStyle="bold" />
 

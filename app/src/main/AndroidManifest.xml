@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- For re-scheduling alarms on boot -->
 
     <application
         android:name=".SmartTodoApplication"
@@ -20,13 +23,34 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".PomodoroActivity"
             android:theme="@style/Theme.SmartToDo" />
+
+        <!-- Task Reminder Receiver -->
+        <receiver
+            android:name=".receiver.TaskReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Notification Action Receiver -->
+        <receiver
+            android:name=".utils.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.example.smarttodo.ACTION_COMPLETE" />
+                <action android:name="com.example.smarttodo.ACTION_SNOOZE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.SnoozedNotificationReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>

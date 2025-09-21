@@ -15,10 +15,31 @@
         <item name="android:statusBarColor">@color/primary_dark</item>
     </style>
 
-    <style name="Theme.SmartToDo.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+    <!-- Simple Button Styles for Dialog (Night) -->
+    <style name="Widget.App.Button.Dialog" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.App.Button.Outlined.Dialog" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.App.Button.Text.Dialog" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Theme.SmartToDo.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorSecondary">@color/accent</item>
+        <!-- <item name="colorError">@color/error_color_state_list</item> --> <!-- Temporarily commented out -->
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
+
+        <!-- Override default button styles for this dialog theme (Night) -->
+        <item name="materialButtonStyle">@style/Widget.App.Button.Dialog</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.Outlined.Dialog</item>
+        <item name="borderlessButtonStyle">@style/Widget.App.Button.Text.Dialog</item>
     </style>
 </resources>

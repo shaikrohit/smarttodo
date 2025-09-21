@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -12,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_medium"
         android:text="@string/add_task_title"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/text_primary_light"
         android:textSize="@dimen/text_size_title"
         android:textStyle="bold" />
 
@@ -24,7 +25,7 @@
         android:layout_marginBottom="@dimen/spacing_medium"
         android:hint="@string/task_title_hint"
         app:helperText="@string/title_required"
-        app:helperTextTextColor="?attr/colorError">
+        app:helperTextTextColor="@color/error_color_state_list">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTitle"
@@ -56,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_small"
         android:text="@string/priority"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/text_primary_light"
         android:textSize="@dimen/text_size_large"
         android:textStyle="bold" />
 
@@ -95,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_small"
         android:text="@string/task_type"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/text_primary_light"
         android:textSize="@dimen/text_size_large"
         android:textStyle="bold" />
 
@@ -103,7 +104,9 @@
         android:id="@+id/chipGroupTaskType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:singleSelection="true">
+        android:layout_marginBottom="@dimen/spacing_medium"
+        app:singleSelection="true"
+        app:singleLine="true">
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipCreative"
@@ -133,7 +136,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_small"
         android:gravity="center"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/text_primary_light"
         android:textSize="@dimen/text_size_large"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -167,6 +170,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/spacing_small"
         android:orientation="horizontal">
 
         <TextView
@@ -174,7 +178,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/set_reminder"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/text_primary_light"
             android:textSize="@dimen/text_size_large" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -182,6 +186,78 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/set_reminder" />
+
+    </LinearLayout>
+
+    <!-- Pre-Reminder Section -->
+    <LinearLayout
+        android:id="@+id/preReminderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_pre_reminder"
+            android:textColor="@color/text_primary_light"
+            android:textSize="@dimen/text_size_medium"
+            android:layout_marginBottom="@dimen/spacing_extra_small"/>
+
+        <Spinner
+            android:id="@+id/spinnerPreReminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/pre_reminder_options"
+            android:paddingTop="@dimen/spacing_extra_small"
+            android:paddingBottom="@dimen/spacing_extra_small" />
+
+        <TextView
+            android:id="@+id/textViewCustomPreReminderDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/accent"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginTop="@dimen/spacing_extra_small"
+            android:visibility="gone"
+            tools:text="Custom (45 min before)" />
+    </LinearLayout>
+
+    <!-- Sound Selection Section -->
+    <LinearLayout
+        android:id="@+id/soundSelectionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/textViewSelectSound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/select_reminder_sound"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/text_size_medium"
+            android:paddingVertical="@dimen/spacing_small"
+            android:drawablePadding="@dimen/spacing_small"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            app:drawableStartCompat="@android:drawable/ic_menu_edit" /> <!-- Replaced ic_music_note with a system placeholder -->
+
+        <TextView
+            android:id="@+id/textViewSelectedSoundName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary_light"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginTop="@dimen/spacing_extra_small"
+            android:visibility="gone"
+            tools:text="Selected: Alarm Clock" />
 
     </LinearLayout>
 
@@ -193,7 +269,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonCancel"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/spacing_small"

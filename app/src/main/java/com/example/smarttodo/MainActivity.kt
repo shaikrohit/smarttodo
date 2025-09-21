@@ -41,7 +41,8 @@ class MainActivity : AppCompatActivity() {
     private var inflatedEmptyState: View? = null
 
     private val taskViewModel: TaskViewModel by viewModels {
-        TaskViewModelFactory((application as SmartTodoApplication).repository)
+        // Updated to pass application context to the factory
+        TaskViewModelFactory(application, (application as SmartTodoApplication).repository)
     }
 
     private val requestPermissionLauncher =
@@ -176,7 +177,6 @@ class MainActivity : AppCompatActivity() {
             updateEmptyState(tasks.isEmpty())
         }
 
-        // Observe UserMessage events for showing Toasts or Snackbars
         taskViewModel.userMessageEvent.observe(this) { event ->
             event.getContentIfNotHandled()?.let { userMessage ->
                 val messageText = userMessage.customMessage ?: getString(userMessage.messageResId!!)
@@ -214,7 +214,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleTaskCompletion(task: Task) {
         taskViewModel.toggleTaskCompletion(task)
-        // Toast is now handled by observing userMessageEvent from ViewModel
     }
 
     private fun showTaskOptions(task: Task) {
@@ -264,7 +263,6 @@ class MainActivity : AppCompatActivity() {
             messageArgs = arrayOf(task.title),
             onConfirm = {
                 taskViewModel.delete(task)
-                // Toast for R.string.task_deleted is now handled by userMessageEvent
             }
         )
     }
@@ -277,7 +275,6 @@ class MainActivity : AppCompatActivity() {
             createdAt = Date()
         )
         taskViewModel.insert(duplicatedTask)
-        // Toast for R.string.task_duplicated is now handled by userMessageEvent
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -325,10 +322,7 @@ class MainActivity : AppCompatActivity() {
         showConfirmationDialog(
             titleResId = R.string.delete_completed_tasks_title,
             messageResId = R.string.delete_completed_tasks_message,
-            onConfirm = {
-                taskViewModel.deleteCompletedTasks()
-                // Toast for R.string.completed_tasks_deleted is now handled by userMessageEvent
-            }
+            onConfirm = { taskViewModel.deleteCompletedTasks() }
         )
     }
 
@@ -337,10 +331,7 @@ class MainActivity : AppCompatActivity() {
             titleResId = R.string.delete_all_tasks_title,
             messageResId = R.string.delete_all_tasks_message,
             positiveButtonResId = R.string.delete_all,
-            onConfirm = {
-                taskViewModel.deleteAllTasks()
-                // Toast for R.string.all_tasks_deleted is now handled by userMessageEvent
-            }
+            onConfirm = { taskViewModel.deleteAllTasks() }
         )
     }
 }
