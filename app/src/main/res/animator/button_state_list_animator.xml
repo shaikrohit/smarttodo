@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed state - button shrinks and lowers elevation -->
+    <item android:state_pressed="true">
+        <set>
+            <objectAnimator
+                android:duration="100"
+                android:propertyName="translationZ"
+                android:valueTo="2dp"
+                android:valueType="floatType" />
+            <objectAnimator
+                android:duration="100"
+                android:propertyName="scaleX"
+                android:valueTo="0.96"
+                android:valueType="floatType" />
+            <objectAnimator
+                android:duration="100"
+                android:propertyName="scaleY"
+                android:valueTo="0.96"
+                android:valueType="floatType" />
+        </set>
+    </item>
+
+    <!-- Default state - button returns to normal -->
+    <item>
+        <set>
+            <objectAnimator
+                android:duration="200"
+                android:propertyName="translationZ"
+                android:startDelay="0"
+                android:valueTo="4dp"
+                android:valueType="floatType" />
+            <objectAnimator
+                android:duration="200"
+                android:propertyName="scaleX"
+                android:startDelay="0"
+                android:valueTo="1.0"
+                android:valueType="floatType" />
+            <objectAnimator
+                android:duration="200"
+                android:propertyName="scaleY"
+                android:startDelay="0"
+                android:valueTo="1.0"
+                android:valueType="floatType" />
+        </set>
+    </item>
+</selector>

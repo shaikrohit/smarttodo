@@ -1,52 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.SmartToDo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="android:colorBackground">@color/background_light</item>
-        <item name="colorSurface">@color/surface_light</item>
-        <item name="colorOnBackground">@color/text_primary_light</item>
-        <item name="colorOnSurface">@color/text_primary_light</item>
-        <item name="colorOnSurfaceVariant">@color/text_secondary_light</item>
-        <item name="android:statusBarColor">@color/primary_dark</item>
-        <item name="colorError">@color/error_color_state_list</item>
+    <style name="Theme.SmartToDo" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Light tokens (these will be overridden by values-night automatically) -->
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="colorOnPrimary">@color/colorOnPrimaryLight</item>
+        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="colorSecondaryVariant">@color/colorOrangeLight</item>
+        <item name="colorOnSecondary">@color/colorWhite</item>
+        <item name="colorTertiary">@color/colorBlue</item>
+        <item name="colorTertiaryVariant">@color/colorBlueLight</item>
+        <item name="colorOnTertiary">@color/colorWhite</item>
+        <item name="colorSurface">@color/colorSurfaceLight</item>
+        <item name="android:colorBackground">@color/colorBackgroundLight</item>
+        <item name="colorOnSurface">@color/colorOnSurfaceLight</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantLight</item>
+        <item name="colorError">@color/delete_action</item>
+        <item name="colorOnError">@color/colorWhite</item>
+
+        <!-- Enhanced ripple effects -->
+        <item name="colorControlHighlight">@color/ripple_light</item>
+
+        <!-- Ensure text colors are visible -->
+        <item name="android:textColorPrimary">@color/colorOnSurfaceLight</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantLight</item>
+        <item name="android:textColor">@color/colorOnSurfaceLight</item>
+
+        <!-- TextInputLayout styles -->
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+
+        <!-- Material component defaults -->
+        <item name="materialButtonStyle">@style/Widget.App.Button.Elevated</item>
+        <item name="materialCardViewStyle">@style/Widget.App.Card.Elevated</item>
+        <item name="chipStyle">@style/Widget.App.Chip.Modern</item>
+
+        <!-- Status bar and navigation bar styling -->
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Enhanced Animations / Transitions -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/app_enter_transition</item>
+        <item name="android:windowExitTransition">@transition/app_exit_transition</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/shared_element_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/shared_element_transition</item>
+
+        <!-- Text appearances -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.App.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.App.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.App.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.App.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.App.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.App.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.App.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.App.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.App.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.App.Body2</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.App.Caption</item>
+        <item name="textAppearanceButton">@style/TextAppearance.App.Button</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.App.Overline</item>
+
+        <!-- Bottom sheet styling -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
     </style>
 
-    <!-- Simple Button Styles for Dialog -->
-    <style name="Widget.App.Button.Dialog" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
+    <style name="Theme.SmartToDo.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="colorTertiary">@color/colorBlue</item>
+        <item name="colorSurface">@color/colorSurfaceLight</item>
+        <item name="colorOnSurface">@color/colorOnSurfaceLight</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantLight</item>
 
-    <style name="Widget.App.Button.Outlined.Dialog" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
+        <!-- Ensure text colors are visible -->
+        <item name="android:textColorPrimary">@color/colorOnSurfaceLight</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantLight</item>
+        <item name="android:textColor">@color/colorOnSurfaceLight</item>
 
-    <style name="Widget.App.Button.Text.Dialog" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
-
-    <style name="Theme.SmartToDo.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorError">@color/error_color_state_list</item>
-        <item name="colorSurface">@color/surface_light</item>
-        <item name="colorOnSurface">@color/text_primary_light</item> <!-- Explicitly setting colorOnSurface -->
-        <item name="colorOnSurfaceVariant">@color/text_secondary_light</item>
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
 
-        <!-- Robust Text Appearance Attributes -->
-        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
-        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
+    <!-- Stylish dialog with slide animation -->
+    <style name="Theme.SmartToDo.Dialog.Slide" parent="Theme.SmartToDo.Dialog">
+        <item name="android:windowAnimationStyle">@style/DialogAnimation.Slide</item>
+    </style>
 
-        <!-- Override default button styles for this dialog theme -->
-        <item name="materialButtonStyle">@style/Widget.App.Button.Dialog</item>
-        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.Outlined.Dialog</item>
-        <item name="borderlessButtonStyle">@style/Widget.App.Button.Text.Dialog</item>
+    <!-- Modern bottom sheet dialog -->
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.App.BottomSheet</item>
+        <item name="colorSurface">@color/colorSurfaceLight</item>
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 </resources>

@@ -1,45 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark Theme for Smart To-Do -->
-    <style name="Theme.SmartToDo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Dark theme specific colors -->
-        <item name="android:colorBackground">@color/background_dark</item>
-        <item name="colorSurface">@color/surface_dark</item>
-        <item name="colorOnBackground">@color/text_primary_dark</item>
-        <item name="colorOnSurface">@color/text_primary_dark</item>
-        <item name="android:statusBarColor">@color/primary_dark</item>
+    <style name="Theme.SmartToDo" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Dark theme token implementations -->
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryVariant">@color/colorDarkBlack</item>
+        <item name="colorOnPrimary">@color/colorOnPrimaryDark</item>
+        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="colorSecondaryVariant">@color/colorOrangeDark</item>
+        <item name="colorOnSecondary">@color/colorWhite</item>
+        <item name="colorTertiary">@color/colorBlue</item>
+        <item name="colorTertiaryVariant">@color/colorBlueDark</item>
+        <item name="colorOnTertiary">@color/colorWhite</item>
+        <item name="android:colorBackground">@color/colorBackgroundDark</item>
+        <item name="colorSurface">@color/colorSurfaceDark</item>
+        <item name="colorOnBackground">@color/colorOnSurfaceDark</item>
+        <item name="colorOnSurface">@color/colorOnSurfaceDark</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantDark</item>
+        <item name="colorError">@color/delete_action</item>
+        <item name="colorOnError">@color/colorWhite</item>
+
+        <!-- Enhanced ripple effect for dark theme -->
+        <item name="colorControlHighlight">@color/ripple_dark</item>
+
+        <!-- Text colors - ensure high contrast and visibility -->
+        <item name="android:textColorPrimary">@color/colorOnSurfaceDark</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:textColor">@color/colorOnSurfaceDark</item>
+
+        <!-- TextInputLayout / hint colors for night -->
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout.Dark</item>
+
+        <!-- Material component defaults for dark theme -->
+        <item name="materialButtonStyle">@style/Widget.App.Button.Elevated.Dark</item>
+        <item name="materialCardViewStyle">@style/Widget.App.Card.Elevated.Dark</item>
+        <item name="chipStyle">@style/Widget.App.Chip.Modern.Dark</item>
+
+        <!-- Status bar and navigation bar styling for dark theme -->
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Dialog theme inheritance -->
+        <item name="materialAlertDialogTheme">@style/Theme.SmartToDo.Dialog.Dark</item>
+
+        <!-- Bottom sheet styling -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog.Dark</item>
+
+        <!-- Enhanced animations/transitions (same as light theme) -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/app_enter_transition</item>
+        <item name="android:windowExitTransition">@transition/app_exit_transition</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/shared_element_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/shared_element_transition</item>
     </style>
 
-    <!-- Simple Button Styles for Dialog (Night) -->
-    <style name="Widget.App.Button.Dialog" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">?attr/colorPrimary</item>
+    <style name="Widget.App.TextInputLayout.Dark" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/colorOrange</item>
+        <item name="hintTextColor">@color/colorOrange</item>
+        <item name="android:textColorHint">@color/colorOnSurfaceVariantDark</item>
+        <item name="helperTextTextColor">@color/colorOnSurfaceVariantDark</item>
+        <item name="boxBackgroundColor">@color/elevationDark2</item>
     </style>
 
-    <style name="Widget.App.Button.Outlined.Dialog" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textColor">?attr/colorPrimary</item>
+    <style name="Widget.App.EditText.Dark" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">@color/colorOnSurfaceDark</item>
+        <item name="android:textColorHint">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:background">@color/elevationDark2</item>
     </style>
 
-    <style name="Widget.App.Button.Text.Dialog" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
-
-    <style name="Theme.SmartToDo.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorSecondary">@color/accent</item>
-        <!-- <item name="colorError">@color/error_color_state_list</item> --> <!-- Temporarily commented out -->
-        <item name="colorSurface">@color/surface_dark</item>
-        <item name="colorOnSurface">@color/text_primary_dark</item>
+    <style name="Theme.SmartToDo.Dialog.Dark" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="colorTertiary">@color/colorBlue</item>
+        <item name="colorSurface">@color/elevationDark2</item>
+        <item name="colorOnSurface">@color/colorOnSurfaceDark</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:textColorPrimary">@color/colorOnSurfaceDark</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantDark</item>
+        <item name="android:textColor">@color/colorOnSurfaceDark</item>
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
 
-        <!-- Override default button styles for this dialog theme (Night) -->
-        <item name="materialButtonStyle">@style/Widget.App.Button.Dialog</item>
-        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.Outlined.Dialog</item>
-        <item name="borderlessButtonStyle">@style/Widget.App.Button.Text.Dialog</item>
+    <!-- Modern bottom sheet dialog for dark theme -->
+    <style name="ThemeOverlay.App.BottomSheetDialog.Dark" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.App.BottomSheet.Dark</item>
+        <item name="colorSurface">@color/elevationDark2</item>
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <!-- Dark Theme Widget Styles -->
+    <style name="Widget.App.Button.Elevated.Dark" parent="Widget.App.Button.Elevated">
+        <item name="android:backgroundTint">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.App.Card.Elevated.Dark" parent="Widget.App.Card.Elevated">
+        <item name="cardBackgroundColor">@color/elevationDark2</item>
+    </style>
+
+    <style name="Widget.App.Chip.Modern.Dark" parent="Widget.App.Chip.Modern">
+        <item name="chipBackgroundColor">@color/elevationDark2</item>
+        <item name="chipStrokeColor">@color/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Widget.App.BottomSheet.Dark" parent="Widget.App.BottomSheet">
+        <item name="android:backgroundTint">@color/elevationDark2</item>
     </style>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -9,7 +10,7 @@
         android:id="@+id/textViewDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/notification_settings_title" 
+        android:text="@string/notification_settings_title"
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:layout_marginBottom="16dp"/>
 
@@ -38,12 +39,12 @@
             android:text="@string/notification_sound_mode_silent"/>
     </RadioGroup>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonSelectSound"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/notification_select_custom_sound"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton" 
         android:layout_marginBottom="8dp"/>
 
     <TextView
@@ -52,32 +53,33 @@
         android:layout_height="wrap_content"
         android:text="@string/notification_current_sound_prefix"
         android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/textViewSnoozeDurationLabel"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputLayoutSnoozeDuration"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/notification_snooze_duration_label" 
-        android:textAppearance="?attr/textAppearanceSubtitle1"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="24dp"
+        android:hint="@string/notification_snooze_duration_label">
 
-    <EditText
-        android:id="@+id/editTextSnoozeDuration"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/notification_snooze_duration_hint" 
-        android:inputType="number"
-        android:maxLength="3"
-        android:layout_marginBottom="24dp"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextSnoozeDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
 
-    <Button
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonClose"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/dialog_close"
-        style="@style/Widget.MaterialComponents.Button.TextButton" 
-        android:layout_gravity="end"/>
+        android:layout_gravity="end"
+        android:text="@string/dialog_close" />
 
 </LinearLayout>

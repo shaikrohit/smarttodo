@@ -1,6 +1,7 @@
 package com.example.smarttodo
 
 import android.Manifest
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -13,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -24,14 +24,12 @@ import com.example.smarttodo.databinding.ActivityMainBinding
 import com.example.smarttodo.ui.AddTaskDialogFragment
 import com.example.smarttodo.ui.SwipeGestureHelper
 import com.example.smarttodo.ui.TaskAdapter
-import com.example.smarttodo.ui.TaskFilter
 import com.example.smarttodo.ui.TaskItemDecoration
 import com.example.smarttodo.ui.TaskViewModel
 import com.example.smarttodo.ui.TaskViewModelFactory
-import com.example.smarttodo.ui.UserMessage // Import UserMessage
+import com.example.smarttodo.util.ThemeManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar // Import Snackbar
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.snackbar.Snackbar
 import java.util.Date
 
 class MainActivity : AppCompatActivity() {
@@ -52,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 R.string.notifications_permission_denied
             }
-            Toast.makeText(this, getString(messageResId), Toast.LENGTH_SHORT).show()
+            showToast(messageResId)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,47 +58,102 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Request notification permission for Android 13+
+        requestNotificationPermissionIfNeeded()
+
         setupToolbar()
         setupRecyclerView()
         setupFab()
-        setupTabs()
         setupSearch()
         setupSwipeRefresh()
         observeViewModel()
 
         applySavedTheme()
-        askNotificationPermission()
+        askScheduleExactAlarmPermission() // Request alarm permission
     }
 
-    private fun askNotificationPermission() {
+    /**
+     * Request notification permission if needed (Android 13+)
+     */
+    private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                    // You can initialize notification components here if needed
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // Show a dialog explaining why notifications are important
                     MaterialAlertDialogBuilder(this)
-                        .setTitle(getString(R.string.permission_needed))
+                        .setTitle(R.string.notification_permission_title)
                         .setMessage(getString(R.string.notification_permission_rationale))
-                        .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                        .setPositiveButton(R.string.ok) { dialog, _ ->
                             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            dialog.dismiss()
                         }
-                        .setNegativeButton(getString(R.string.cancel), null)
+                        .setNegativeButton(R.string.cancel, null)
                         .show()
-                } else {
+                }
+                else -> {
+                    // First time asking or "Don't ask again" selected
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
         }
     }
 
+    private fun askScheduleExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(ALARM_SERVICE) as android.app.AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(getString(R.string.permission_needed))
+                    .setMessage(getString(R.string.exact_alarm_permission_rationale))
+                    .setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
+                        val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .show()
+            }
+        }
+    }
+
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.title = getString(R.string.app_name)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.action_theme).isChecked = ThemeManager.isDarkMode(this)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_theme -> {
+                item.isChecked = !item.isChecked
+                ThemeManager.setDarkMode(this, item.isChecked)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun applySavedTheme() {
+        ThemeManager.applyTheme(ThemeManager.isDarkMode(this))
     }
 
     private fun setupRecyclerView() {
         taskAdapter = TaskAdapter(
-            onTaskClick = { task -> editTask(task) },
+            onTaskClick = { task, view -> showTaskDetail(task, view) },
             onTaskLongClick = { task -> showTaskOptions(task) },
             onCompleteClick = { task -> toggleTaskCompletion(task) }
         )
@@ -110,6 +163,28 @@ class MainActivity : AppCompatActivity() {
             addItemDecoration(TaskItemDecoration(resources.getDimensionPixelSize(R.dimen.task_item_spacing)))
         }
         setupSwipeGestures()
+
+        // Hide FAB on scroll for cleaner UX; show when user scrolls up
+        binding.recyclerViewTasks.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 10) binding.fabAddTask.hide()
+                else if (dy < -10) binding.fabAddTask.show()
+            }
+        })
+    }
+
+    private fun showTaskDetail(task: Task, view: View) {
+        val intent = Intent(this, TaskDetailActivity::class.java).apply {
+            putExtra("task_id", task.id)
+            putExtra("task_title", task.title)
+            putExtra("task_description", task.description)
+            putExtra("transition_name", "task_card_${task.id}")
+        }
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            this, view, "task_card_${task.id}"
+        )
+        startActivity(intent, options.toBundle())
     }
 
     private fun setupSwipeGestures() {
@@ -121,7 +196,7 @@ class MainActivity : AppCompatActivity() {
             },
             onSwipeLeft = { position ->
                 if (position != RecyclerView.NO_POSITION) {
-                    taskAdapter.getTaskAt(position)?.let { showDeleteConfirmation(it) }
+                    taskAdapter.getTaskAt(position)?.let { showDeleteConfirmation(it, position) }
                 }
             }
         )
@@ -137,22 +212,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, PomodoroActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    private fun setupTabs() {
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                val filter = when (tab?.position) {
-                    0 -> TaskFilter.ALL
-                    1 -> TaskFilter.INCOMPLETE
-                    2 -> TaskFilter.COMPLETED
-                    else -> TaskFilter.ALL
-                }
-                taskViewModel.setFilter(filter)
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) { /* No action */ }
-            override fun onTabReselected(tab: TabLayout.Tab?) { /* No action */ }
-        })
     }
 
     private fun setupSearch() {
@@ -172,9 +231,27 @@ class MainActivity : AppCompatActivity() {
         taskViewModel.isLoading.observe(this) { isLoading ->
             binding.swipeRefreshLayout.isRefreshing = isLoading
         }
-        taskViewModel.tasks.observe(this) { tasks ->
-            taskAdapter.submitList(tasks)
-            updateEmptyState(tasks.isEmpty())
+
+        taskViewModel.categorizedTasks.observe(this) { categorizedTasks ->
+            val displayableList = mutableListOf<Any>()
+            if (categorizedTasks.today.isNotEmpty()) {
+                displayableList.add(getString(R.string.category_today))
+                displayableList.addAll(categorizedTasks.today)
+            }
+            if (categorizedTasks.tomorrow.isNotEmpty()) {
+                displayableList.add(getString(R.string.category_tomorrow))
+                displayableList.addAll(categorizedTasks.tomorrow)
+            }
+            if (categorizedTasks.upcoming.isNotEmpty()) {
+                displayableList.add(getString(R.string.category_upcoming))
+                displayableList.addAll(categorizedTasks.upcoming)
+            }
+            if (categorizedTasks.completed.isNotEmpty()) {
+                displayableList.add(getString(R.string.category_completed))
+                displayableList.addAll(categorizedTasks.completed)
+            }
+            taskAdapter.submitList(displayableList)
+            updateEmptyState(displayableList.isEmpty())
         }
 
         taskViewModel.userMessageEvent.observe(this) { event ->
@@ -194,6 +271,11 @@ class MainActivity : AppCompatActivity() {
             binding.recyclerViewTasks.visibility = View.GONE
             if (inflatedEmptyState == null) {
                 inflatedEmptyState = binding.emptyStateViewStub.inflate()
+                // Wire the empty-state Add button to open the add task dialog
+                inflatedEmptyState?.findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonEmptyAdd)
+                    ?.setOnClickListener {
+                        showAddTaskDialog()
+                    }
             }
             inflatedEmptyState?.visibility = View.VISIBLE
         } else {
@@ -239,7 +321,8 @@ class MainActivity : AppCompatActivity() {
         @StringRes messageResId: Int,
         @StringRes positiveButtonResId: Int = R.string.delete,
         messageArgs: Array<Any>? = null,
-        onConfirm: () -> Unit
+        onConfirm: () -> Unit,
+        onCancel: (() -> Unit)? = null
     ) {
         val message = if (messageArgs != null) {
             getString(messageResId, *messageArgs)
@@ -252,17 +335,27 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(getString(positiveButtonResId)) { _, _ ->
                 onConfirm()
             }
-            .setNegativeButton(getString(R.string.cancel), null)
+            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+                onCancel?.invoke()
+            }
+            .setOnCancelListener { 
+                onCancel?.invoke()
+            }
             .show()
     }
 
-    private fun showDeleteConfirmation(task: Task) {
+    private fun showDeleteConfirmation(task: Task, position: Int = -1) {
         showConfirmationDialog(
             titleResId = R.string.delete_task_title,
             messageResId = R.string.delete_task_message,
             messageArgs = arrayOf(task.title),
             onConfirm = {
                 taskViewModel.delete(task)
+            },
+            onCancel = {
+                if (position != -1) {
+                    taskAdapter.notifyItemChanged(position)
+                }
             }
         )
     }
@@ -277,61 +370,28 @@ class MainActivity : AppCompatActivity() {
         taskViewModel.insert(duplicatedTask)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_theme_toggle -> {
-                toggleTheme()
-                true
-            }
-            R.id.action_delete_completed -> {
-                showDeleteCompletedConfirmation()
-                true
-            }
-            R.id.action_delete_all -> {
-                showDeleteAllConfirmation()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun toggleTheme() {
-        val currentNightMode = AppCompatDelegate.getDefaultNightMode()
-        val newNightMode = if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-            AppCompatDelegate.MODE_NIGHT_NO
-        } else {
-            AppCompatDelegate.MODE_NIGHT_YES
-        }
-        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        sharedPref.edit().putInt("theme_mode", newNightMode).apply()
-        AppCompatDelegate.setDefaultNightMode(newNightMode)
-    }
-
-    private fun applySavedTheme() {
-        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val savedThemeMode = sharedPref.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        AppCompatDelegate.setDefaultNightMode(savedThemeMode)
-    }
-
+    @Suppress("unused")
     private fun showDeleteCompletedConfirmation() {
         showConfirmationDialog(
             titleResId = R.string.delete_completed_tasks_title,
             messageResId = R.string.delete_completed_tasks_message,
-            onConfirm = { taskViewModel.deleteCompletedTasks() }
+            onConfirm = { taskViewModel.deleteCompletedTasks() },
+            onCancel = {}
         )
     }
 
+    @Suppress("unused")
     private fun showDeleteAllConfirmation() {
         showConfirmationDialog(
             titleResId = R.string.delete_all_tasks_title,
             messageResId = R.string.delete_all_tasks_message,
             positiveButtonResId = R.string.delete_all,
-            onConfirm = { taskViewModel.deleteAllTasks() }
+            onConfirm = { taskViewModel.deleteAllTasks() },
+            onCancel = {}
         )
+    }
+
+    private fun showToast(@StringRes messageResId: Int) {
+        Toast.makeText(this, getString(messageResId), Toast.LENGTH_SHORT).show()
     }
 }

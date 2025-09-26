@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Smart To-Do</string>
-    <string name="search_hint">Search tasks...</string>
+    <string name="search_hint">Search tasks…</string>
     <string name="add_task">Add new task</string>
     <string name="no_tasks_title">No tasks yet!</string>
     <string name="no_tasks_subtitle">Tap the + button to add your first task</string>
@@ -45,6 +45,7 @@
     <string name="notifications_permission_denied">Notifications permission denied</string>
     <string name="permission_needed">Permission needed</string>
     <string name="notification_permission_rationale">This permission is needed to show task reminders.</string>
+    <string name="notification_permission_title">Notification Permission</string>
     <string name="ok">OK</string>
     <string name="error_generic">An error occurred. Please try again.</string>
 
@@ -54,7 +55,7 @@
     <string name="date_time_format_display" translatable="false">MMM dd, yyyy \'at\' hh:mm a</string>
     <string name="due_date_prefix_display">Due: %1$s</string>
 
-    <string name="tab_all">All</string>
+    <string name="tab_all">Tasks</string>
     <string name="tab_active">Active</string>
     <string name="tab_completed">Completed</string>
     <string name="priority">Priority</string>
@@ -66,17 +67,20 @@
     <string name="task_type_creative">Creative</string>
     <string name="task_type_analytical">Analytical</string>
     <string name="task_type_administrative">Administrative</string>
-        <!-- Other strings -->
-        <string name="pomodoro_timer_default_title">Pomodoro Timer</string>
-        <!-- Add these lines -->
-        <string name="button_pause">Pause</string>
-        <string name="button_resume">Resume</string>
-        <string name="button_start">Start</string>
 
-        <!-- <string name="app_name">smarttodo</string> -->
+    <!-- Pomodoro Timer strings -->
+    <string name="pomodoro_timer_default_title">Pomodoro Timer</string>
+    <string name="button_pause">Pause</string>
+    <string name="button_resume">Resume</string>
+    <string name="button_start">Start</string>
+
+    <!-- Notification related strings -->
     <string name="channel_name">Task Reminders</string>
-    <string name="channel_description">Notifications for task deadlines and reminders</string>
+    <string name="channel_description">Notifications for task reminders and deadlines</string>
     <string name="default_task_reminder_content">Task upcoming!</string>
+    <string name="notification_action_complete">Complete</string>
+    <string name="notification_action_snooze">Snooze</string>
+    <string name="pre_reminder_title_generic">Coming up: %1$s</string>
 
     <!-- Notification Settings Dialog Strings -->
     <string name="notification_settings_title">Notification Sound</string>
@@ -90,10 +94,6 @@
     <string name="notification_sound_display_custom_prefix">Custom: </string>
     <string name="notification_sound_display_unknown">Unknown</string>
     <string name="dialog_close">Close</string>
-
-    <!-- Notification Action Strings -->
-    <string name="notification_action_complete">Mark as Complete</string>
-    <string name="notification_action_snooze">Snooze (5 min)</string>
 
     <!-- Pre-Reminder Strings -->
     <string name="label_pre_reminder">Pre-reminder</string>
@@ -109,12 +109,11 @@
 
     <!-- Notification Pre-Reminder Titles -->
     <string name="pre_reminder_title_dynamic" formatted="true">Upcoming: %1$s (%2$s minutes before)</string>
-    <string name="pre_reminder_title_generic" formatted="true">Upcoming: %1$s</string>
 
     <!-- Custom Pre-Reminder Dialog Strings -->
     <string name="custom_pre_reminder_dialog_title">Set Custom Pre-Reminder</string>
     <string name="custom_pre_reminder_input_hint">Minutes before due date</string>
-    <string name="custom_pre_reminder_error_invalid_input">Please enter a valid number of minutes (1-1440).</string>
+    <string name="custom_pre_reminder_error_invalid_input">Please enter a valid number of minutes (1–1440).</string>
     <string name="custom_pre_reminder_set_button">Set</string>
     <string name="custom_pre_reminder_dynamic_spinner_text" formatted="true">Custom (%1$d min before)</string>
 
@@ -131,5 +130,29 @@
     <string name="error_saving_task_critical">Error: Could not save the task. Critical failure.</string>
     <string name="error_scheduling_reminder_after_insert">Task saved, but an error occurred scheduling the reminder.</string>
     <string name="error_task_not_found_for_toggle">Error: Could not find the task to update.</string>
+    <string name="exact_alarm_permission_rationale">This permission is needed to schedule task reminders accurately. Please enable it in settings.</string>
+    <string name="go_to_settings">Go to Settings</string>
 
+    <!-- Task Categories -->
+    <string name="category_today">Today</string>
+    <string name="category_tomorrow">Tomorrow</string>
+    <string name="category_upcoming">Upcoming</string>
+    <string name="category_completed">Completed</string>
+
+    <!-- Theme Strings -->
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="due_date_icon_description">Due date icon</string>
+
+    <!-- Snooze Dialog strings -->
+    <string name="snooze_dialog_title">Snooze \"%1$s\"</string>
+    <string name="snooze_5_min">5 minutes</string>
+    <string name="snooze_15_min">15 minutes</string>
+    <string name="snooze_30_min">30 minutes</string>
+    <string name="snooze_1_hour">1 hour</string>
+    <string name="snooze_2_hours">2 hours</string>
+    <string name="snooze_tomorrow">Tomorrow</string>
+    <string name="snooze_success">Task snoozed until %1$s</string>
+    <string name="snooze_cancel">Don\'t snooze</string>
+    <string name="snooze_options_list_description">List of snooze duration options</string>
 </resources>

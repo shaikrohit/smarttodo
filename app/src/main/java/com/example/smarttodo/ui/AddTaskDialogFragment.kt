@@ -76,7 +76,7 @@ class AddTaskDialogFragment : DialogFragment() {
         )
         private const val NO_PRE_REMINDER_POSITION = 0
         // Ensure this position matches the "Custom" item in your spinner_pre_reminder_options array
-        private const val CUSTOM_PRE_REMINDER_POSITION = 5 
+        private const val CUSTOM_PRE_REMINDER_POSITION = 5
 
         /**
          * Creates a new instance of AddTaskDialogFragment for editing an existing task.
@@ -93,7 +93,7 @@ class AddTaskDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.Theme_SmartToDo_Dialog) // Apply custom dialog theme
+        setStyle(STYLE_NORMAL, R.style.Theme_SmartToDo_Dialog_Slide) // Apply custom dialog theme
         Log.d(TAG, "onCreate: DialogFragment created.")
         arguments?.getSerializable(ARG_TASK)?.let {
             editingTask = it as? Task
@@ -151,36 +151,6 @@ class AddTaskDialogFragment : DialogFragment() {
     }
 
     /**
-     * Sets up click listeners for buttons and watchers for input fields.
-     */
-    private fun setupClickListenersAndWatchers() {
-        binding.buttonCancel.setOnClickListener { dismiss() }
-        binding.buttonSave.setOnClickListener { saveTask() }
-        binding.buttonSelectDate.setOnClickListener { showDatePicker() }
-        binding.buttonSelectTime.setOnClickListener { showTimePicker() }
-
-        binding.switchReminder.setOnCheckedChangeListener { _, _ -> updatePreReminderUIVisibility() }
-
-        binding.spinnerPreReminder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isSpinnerProgrammaticallySet) {
-                    isSpinnerProgrammaticallySet = false // Reset flag after programmatic set
-                    return
-                }
-                Log.d(TAG, "Pre-reminder spinner item selected at position: $position")
-                if (position == CUSTOM_PRE_REMINDER_POSITION) {
-                    showCustomPreReminderDialog()
-                } else {
-                    customPreReminderMinutes = null // Clear custom minutes if a predefined or "none" is selected
-                    updatePreReminderUIVisibility() // Update UI, e.g., hide custom text view
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) { /* No action needed */ }
-        }
-        Log.d(TAG, "Click listeners and watchers setup.")
-    }
-
-    /**
      * If editing an existing task, this method populates the input fields with the task's data.
      */
     private fun populateFieldsForEditing() {
@@ -190,9 +160,9 @@ class AddTaskDialogFragment : DialogFragment() {
                 editTextTitle.setText(task.title)
                 editTextDescription.setText(task.description)
                 when (task.priority) {
-                    Priority.LOW -> radioLowPriority.isChecked = true
-                    Priority.MEDIUM -> radioMediumPriority.isChecked = true
-                    Priority.HIGH -> radioHighPriority.isChecked = true
+                    Priority.LOW -> chipLowPriority.isChecked = true
+                    Priority.MEDIUM -> chipMediumPriority.isChecked = true
+                    Priority.HIGH -> chipHighPriority.isChecked = true
                 }
                 when (task.taskType) {
                     TaskType.CREATIVE -> chipCreative.isChecked = true
@@ -258,7 +228,7 @@ class AddTaskDialogFragment : DialogFragment() {
             Log.d(TAG, "No date selected for time picker, defaulting to now.")
             selectedDate = Date() // Default to current date and time if no date was set
         }
-        val calendar = Calendar.getInstance().apply { time = selectedDate!! } 
+        val calendar = Calendar.getInstance().apply { time = selectedDate!! }
         TimePickerDialog(
             requireContext(),
             { _, hourOfDay, minute ->
@@ -333,7 +303,7 @@ class AddTaskDialogFragment : DialogFragment() {
 
         dialog.setOnShowListener { alertDialog ->
             val positiveButton = (alertDialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.setOnClickListener { 
+            positiveButton.setOnClickListener {
                 val inputText = editText.text.toString()
                 val minutes = inputText.toIntOrNull()
                 if (minutes != null && minutes > 0 && minutes <= 1440) { // Max 24 hours (1440 minutes)
@@ -370,10 +340,10 @@ class AddTaskDialogFragment : DialogFragment() {
         }
 
         val description = binding.editTextDescription.text.toString().trim()
-        val priority = when (binding.radioGroupPriority.checkedRadioButtonId) {
-            R.id.radioLowPriority -> Priority.LOW
-            R.id.radioMediumPriority -> Priority.MEDIUM
-            R.id.radioHighPriority -> Priority.HIGH
+        val priority = when {
+            binding.chipLowPriority.isChecked -> Priority.LOW
+            binding.chipMediumPriority.isChecked -> Priority.MEDIUM
+            binding.chipHighPriority.isChecked -> Priority.HIGH
             else -> Priority.LOW // Default priority
         }
         val taskType = when (binding.chipGroupTaskType.checkedChipId) {
@@ -405,13 +375,13 @@ class AddTaskDialogFragment : DialogFragment() {
         } else {
              preReminderOffsetToSave = null // No reminder if switch is off or no date set
         }
-        
+
         val taskToSave = editingTask?.copy(
             title = title,
             description = description,
             priority = priority,
             taskType = taskType,
-            dueDate = selectedDate, 
+            dueDate = selectedDate,
             hasReminder = hasReminder,
             preReminderOffsetMinutes = preReminderOffsetToSave
         ) ?: Task(
@@ -434,7 +404,7 @@ class AddTaskDialogFragment : DialogFragment() {
                 Log.d(TAG, "Calling viewModel.insert for new task.")
                 taskViewModel.insert(taskToSave)
             }
-            
+
             // Attempt to dismiss the dialog
             if (isAdded && activity != null && !isStateSaved) {
                 Log.d(TAG, "Task save/update successful, dismissing dialog.")
@@ -448,6 +418,76 @@ class AddTaskDialogFragment : DialogFragment() {
             Log.e(TAG, "CRITICAL: Exception during ViewModel call in saveTask: ${e.message}", e)
             Snackbar.make(binding.root, getString(R.string.error_saving_task_critical), Snackbar.LENGTH_LONG).show()
             // Do not dismiss the dialog if such a critical error occurs here.
+        }
+    }
+
+    /**
+     * Sets up click listeners for buttons and other interactive elements in the dialog.
+     */
+    private fun setupClickListenersAndWatchers() {
+        // Setup the date and time picker buttons
+        binding.buttonSelectDate.setOnClickListener { showDatePicker() }
+        binding.buttonSelectTime.setOnClickListener { showTimePicker() }
+
+        // Setup save button
+        binding.buttonSave.setOnClickListener { saveTask() }
+
+        // Setup cancel button
+        binding.buttonCancel.setOnClickListener { dismiss() }
+
+        // Setup reminder switch
+        binding.switchReminder.setOnCheckedChangeListener { _, isChecked ->
+            updatePreReminderUIVisibility()
+        }
+
+        // Validate title input
+        binding.editTextTitle.doOnTextChanged { text, _, _, _ ->
+            binding.inputLayoutTitle.error = if (text.isNullOrBlank())
+                getString(R.string.title_required)
+            else
+                null
+        }
+
+        // Setup priority chips
+        binding.chipGroupPriority.setOnCheckedChangeListener { group, checkedId ->
+            // Priority selection is automatically handled by the ChipGroup
+            Log.d(TAG, "Priority selection changed to chip ID: $checkedId")
+        }
+
+        // Setup task type chips
+        binding.chipGroupTaskType.setOnCheckedChangeListener { group, checkedId ->
+            Log.d(TAG, "Task type selection changed to chip ID: $checkedId")
+        }
+
+        // Setup pre-reminder spinner listener
+        binding.spinnerPreReminder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isSpinnerProgrammaticallySet) {
+                    // If this selection was triggered programmatically, reset flag and return
+                    isSpinnerProgrammaticallySet = false
+                    return
+                }
+
+                when (position) {
+                    CUSTOM_PRE_REMINDER_POSITION -> {
+                        showCustomPreReminderDialog()
+                    }
+                    NO_PRE_REMINDER_POSITION -> {
+                        customPreReminderMinutes = null
+                    }
+                    else -> {
+                        // For predefined values, store the corresponding minutes value
+                        customPreReminderMinutes = null // Clear custom value
+                        val minutes = PREDEFINED_OFFSET_VALUES[position]
+                        Log.d(TAG, "Selected predefined pre-reminder option: $minutes minutes")
+                    }
+                }
+                updatePreReminderUIVisibility()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
         }
     }
 

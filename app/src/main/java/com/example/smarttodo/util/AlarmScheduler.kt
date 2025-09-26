@@ -4,16 +4,73 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
+import androidx.core.app.TaskStackBuilder
+import androidx.core.content.edit
+import androidx.core.net.toUri
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.pm.PackageManager
+import com.example.smarttodo.MainActivity
+import com.example.smarttodo.R
 import com.example.smarttodo.data.Task // Your Task model
 import com.example.smarttodo.receiver.TaskReminderReceiver // Your BroadcastReceiver
 import java.util.Calendar
 
 object AlarmScheduler {
 
+    /**
+     * HIGH-LEVEL FLOW (Scheduling Pipeline)
+     * 1. User creates/updates a Task (with optional dueDate + hasReminder + optional preReminderOffsetMinutes).
+     * 2. UI / ViewModel calls AlarmScheduler.scheduleReminder(context, task) after persistence.
+     * 3. We validate permissions + task state. If invalid → existing alarm is cancelled.
+     * 4. We compute the reminder fire time:
+     *      - If task.preReminderOffsetMinutes != null -> we schedule ONLY the pre-reminder time here (fire earlier)
+     *      - The TaskReminderReceiver is responsible for distinguishing pre vs main reminder and potentially chaining.
+     * 5. We embed: task object, sound config (resolved via NotificationHelper prefs), and a boolean EXTRA_IS_PRE_REMINDER.
+     * 6. AlarmManager schedules an exact alarm (when allowed) or falls back.
+     * 7. When the alarm fires TaskReminderReceiver constructs and shows the notification (vibration, actions, etc.).
+     * 8. User may Snooze (SnoozeTaskReceiver / NotificationActionReceiver) or Complete (NotificationActionReceiver) which cancels or reschedules.
+     *
+     * SAFETY / RESILIENCE NOTES
+     * - We guard every external call with try/catch.
+     * - We never keep stale alarms: if reminder conditions become invalid (no dueDate / hasReminder false) we cancel.
+     * - We do NOT attempt to schedule in the past; those are ignored + cancelled.
+     * - Permissions (POST_NOTIFICATIONS, exact alarm privilege) are validated before actual scheduling.
+     */
+
     private const val TAG = "AlarmScheduler"
-    const val EXTRA_IS_PRE_REMINDER = "com.example.smarttodo.EXTRA_IS_PRE_REMINDER" // Added constant
+    // Ensure this constant matches the one in TaskReminderReceiver.kt
+    const val EXTRA_IS_PRE_REMINDER = "com.example.smarttodo.EXTRA_IS_PRE_REMINDER" 
+
+    // New helper to check required permissions/state for notifications and exact alarms
+    fun hasRequiredAlarmAndNotificationPermissions(context: Context): Boolean {
+        // Check POST_NOTIFICATIONS (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val notificationGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!notificationGranted) {
+                Log.w(TAG, "Missing POST_NOTIFICATIONS permission (Android 13+).")
+                return false
+            }
+        }
+
+        // Check exact alarm scheduling availability (Android S+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Log.w(TAG, "Cannot schedule exact alarms: SCHEDULE_EXACT_ALARM not granted or user disabled it.")
+                return false
+            }
+        }
+
+        return true
+    }
 
     /**
      * Schedules a reminder for the given task.
@@ -23,81 +80,80 @@ object AlarmScheduler {
      * @param task The task for which to schedule a reminder. This parameter must be non-null by declaration.
      */
     fun scheduleReminder(context: Context, task: Task) {
-        // Extremely verbose logging at the very start of the method for NPE diagnosis
-        Log.i(TAG, "scheduleReminder ENTRY. Task ID: ${task?.id ?: "NULL_TASK_OBJECT"}, Title: ${task?.title ?: "NULL_TASK_OBJECT"}, Due: ${task?.dueDate ?: "NULL_TASK_OBJECT"}, Reminder: ${task?.hasReminder ?: "NULL_TASK_OBJECT"}. Task instance: ${System.identityHashCode(task)}")
-        
+        // Removed impossible null checks (task is non-null at signature level)
+        Log.i(TAG, "scheduleReminder ENTRY id=${task.id} title='${task.title}' due=${task.dueDate} hasReminder=${task.hasReminder} preOffset=${task.preReminderOffsetMinutes}")
         try {
-            // The original non-null parameter check by Kotlin compiler happens before this try block technically.
-            // If 'task' is null here, the NPE from parameter check already occurred.
-
-            if (task == null) { // Explicit redundant check for logging if somehow bypassed initial check
-                Log.e(TAG, "CRITICAL_ERROR: 'task' parameter is NULL inside scheduleReminder, even after non-null declaration! This should not happen.")
-                // Potentially throw a custom exception here or return, though the NPE would have already happened.
+            if (!hasRequiredAlarmAndNotificationPermissions(context)) {
+                Log.w(TAG, "Permissions missing – skipping schedule for taskId=${task.id}")
                 return
             }
-
             if (!task.hasReminder || task.dueDate == null) {
-                Log.d(TAG, "Reminder not scheduled for task '${task.title}' (ID: ${task.id}) - no reminder flag or no due date.")
+                Log.d(TAG, "No reminder conditions – cancelling (if existed) taskId=${task.id}")
+                cancelReminder(context, task.id)
                 return
             }
 
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-            // Due date is checked as non-null by the condition above.
-            val reminderTime = Calendar.getInstance().apply {
-                time = task.dueDate!! 
-                task.preReminderOffsetMinutes?.let {
-                    add(Calendar.MINUTE, -it)
-                }
+            // Compute trigger time: if preOffset provided, schedule PRE reminder earlier; TaskReminderReceiver will know.
+            val triggerCal = Calendar.getInstance().apply {
+                time = task.dueDate
+                task.preReminderOffsetMinutes?.let { add(Calendar.MINUTE, -it) }
             }
 
-            if (reminderTime.before(Calendar.getInstance())) {
-                Log.w(TAG, "Reminder time for task '${task.title}' (ID: ${task.id}) is in the past. Not scheduling.")
+            if (triggerCal.before(Calendar.getInstance())) {
+                Log.w(TAG, "Computed trigger in past – cancelling existing & skipping. taskId=${task.id}")
+                cancelReminder(context, task.id)
                 return
             }
 
             val intent = Intent(context, TaskReminderReceiver::class.java).apply {
-                action = TaskReminderReceiver.ACTION_SHOW_TASK_REMINDER // Corrected constant
+                action = TaskReminderReceiver.ACTION_SHOW_TASK_REMINDER
+                putExtra(TaskReminderReceiver.EXTRA_TASK_OBJECT, task)
+                val notificationHelper = com.example.smarttodo.utils.NotificationHelper(context)
+                val (soundMode, customSoundUri) = notificationHelper.getNotificationSoundSettings()
+                val soundUriToPass: Uri? = when (soundMode) {
+                    SoundMode.CUSTOM -> customSoundUri ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    SoundMode.DEFAULT -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    SoundMode.SILENT -> null
+                }
+                putExtra(TaskReminderReceiver.EXTRA_SOUND_URI_STRING, soundUriToPass?.toString())
+                putExtra(EXTRA_IS_PRE_REMINDER, task.preReminderOffsetMinutes != null && task.preReminderOffsetMinutes > 0)
                 putExtra(TaskReminderReceiver.EXTRA_TASK_ID, task.id)
             }
 
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                task.id, 
+                task.id,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            // No try-catch around alarmManager calls here, as the outer try-catch will handle it.
+            val triggerMillis = triggerCal.timeInMillis
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                    if (alarmManager.canScheduleExactAlarms()) {
-                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderTime.timeInMillis, pendingIntent)
-                        Log.i(TAG, "Exact alarm scheduled (Android S+) for task '${task.title}' (ID: ${task.id}) at ${reminderTime.time}")
+                    if ((context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms()) {
+                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerMillis, pendingIntent)
+                        Log.i(TAG, "Exact alarm (S+) scheduled @${triggerCal.time} taskId=${task.id}")
                     } else {
-                        Log.w(TAG, "Cannot schedule exact alarm for task '${task.title}' (ID: ${task.id}). SCHEDULE_EXACT_ALARM permission not granted or disabled on Android S+.")
-                        // Fallback: Consider scheduling a non-exact alarm or guiding the user to settings
-                        // alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime.timeInMillis, pendingIntent)
+                        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerMillis, pendingIntent)
+                        Log.w(TAG, "Fallback inexact alarm (missing exact permission) @${triggerCal.time} taskId=${task.id}")
                     }
                 }
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderTime.timeInMillis, pendingIntent)
-                    Log.i(TAG, "Exact alarm scheduled (Android M-R) for task '${task.title}' (ID: ${task.id}) at ${reminderTime.time}")
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerMillis, pendingIntent)
+                    Log.i(TAG, "Exact alarm (M-R) scheduled @${triggerCal.time} taskId=${task.id}")
                 }
                 else -> {
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderTime.timeInMillis, pendingIntent)
-                    Log.i(TAG, "Exact alarm scheduled (pre-M) for task '${task.title}' (ID: ${task.id}) at ${reminderTime.time}")
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerMillis, pendingIntent)
+                    Log.i(TAG, "Exact alarm (pre-M) scheduled @${triggerCal.time} taskId=${task.id}")
                 }
             }
-
-        } catch (e: Throwable) { // Catch Throwable to be absolutely sure, including Errors.
-            // This block will only be hit if the NPE happens *after* the initial parameter check, or if other exceptions occur.
-            Log.e(TAG, "EXCEPTION in scheduleReminder for task ID: ${task?.id ?: "TASK_WAS_NULL_ON_ENTRY_OR_BECAME_NULL"}, Title: ${task?.title ?: "N/A"}. Exception: ${e.javaClass.simpleName}", e)
-            // Re-throw if you want it to propagate after logging, or handle it (e.g., show error to user via a different mechanism)
-            // For now, let it propagate to see if TaskViewModel catches it. But if it got here, the initial NPE already happened.
-            // throw e 
+        } catch (e: Throwable) {
+            Log.e(TAG, "scheduleReminder exception taskId=${task.id} ${e.javaClass.simpleName}:${e.message}", e)
+        } finally {
+            Log.i(TAG, "scheduleReminder EXIT id=${task.id}")
         }
-        Log.i(TAG, "scheduleReminder EXIT. Task ID: ${task?.id ?: "NULL_TASK_OBJECT"}")
     }
 
     /**
@@ -107,11 +163,11 @@ object AlarmScheduler {
      * @param taskId The ID of the task for which to cancel the reminder.
      */
     fun cancelReminder(context: Context, taskId: Int) {
-        // ... (cancelReminder implementation remains the same)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, TaskReminderReceiver::class.java).apply {
-            action = TaskReminderReceiver.ACTION_SHOW_TASK_REMINDER // Corrected constant: Must match the action used for scheduling
+            action = TaskReminderReceiver.ACTION_SHOW_TASK_REMINDER // Must match the action used for scheduling
         }
+        // Use FLAG_NO_CREATE to check if a PendingIntent exists without creating one
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             taskId,
@@ -121,10 +177,10 @@ object AlarmScheduler {
 
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
-            pendingIntent.cancel() 
+            pendingIntent.cancel() // Also cancel the PendingIntent itself
             Log.i(TAG, "Cancelled reminder for task ID: $taskId")
         } else {
-            Log.d(TAG, "No reminder found to cancel for task ID: $taskId (PendingIntent was null)")
+            Log.d(TAG, "No reminder found to cancel for task ID: $taskId (PendingIntent was null or did not exist)")
         }
     }
 }

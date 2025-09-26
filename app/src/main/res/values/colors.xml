@@ -1,25 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#FF4081</color>
-    <color name="background_light">#FFFFFF</color>
-    <color name="background_dark">#121212</color>
-    <color name="surface_light">#FFFFFF</color>
-    <color name="surface_dark">#1E1E1E</color>
-    <color name="text_primary_light">#000000</color>
-    <color name="text_primary_dark">#FFFFFF</color>
-    <color name="text_secondary_light">#757575</color>
-    <color name="text_secondary_dark">#B3B3B3</color>
-    <color name="priority_high">#F44336</color>
-    <color name="priority_medium">#FF9800</color>
-    <color name="priority_low">#4CAF50</color>
-    <color name="complete_action">#4CAF50</color>
-    <color name="delete_action">#F44336</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="transparent">#00000000</color>
-    <color name="purple_500">#9C27B0</color>
-    <color name="purple_700">#7B1FA2</color>
+    <!-- Enhanced color palette with vibrant, futuristic colors -->
+    <color name="colorBlack">#0B0D10</color>
+    <color name="colorDarkBlack">#05070A</color>
+    <color name="colorCharcoal">#1A1D21</color>
+
+    <!-- Vibrant orange with gradient options -->
+    <color name="colorOrange">#FF5722</color> <!-- Main orange -->
+    <color name="colorOrangeDark">#E64A19</color> <!-- Darker orange -->
+    <color name="colorOrangeLight">#FFAB91</color> <!-- Lighter orange -->
+    <color name="colorOrangeAccent">#FF7D47</color> <!-- Accent orange -->
+
+    <!-- Blue palette for modern UI -->
+    <color name="colorBlue">#2196F3</color> <!-- Main blue -->
+    <color name="colorBlueDark">#0D47A1</color> <!-- Darker blue -->
+    <color name="colorBlueLight">#BBDEFB</color> <!-- Lighter blue -->
+    <color name="colorCyan">#00BCD4</color> <!-- Cyan accent -->
+
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorOffWhite">#F8F9FA</color>
+    <color name="colorGhostWhite">#F1F3F5</color>
+
+    <!-- Accent colors for vibrant highlights -->
+    <color name="colorPurple">#673AB7</color>
+    <color name="colorTeal">#009688</color>
+
+    <!-- Surface and elevation colors for light theme -->
+    <color name="elevationLight1">#FFFFFF</color>
+    <color name="elevationLight2">#F9FAFC</color>
+    <color name="elevationLight3">#F5F7FA</color>
+    <color name="elevationLight4">#F0F2F5</color>
+
+    <!-- Surface and elevation colors for dark theme -->
+    <color name="elevationDark1">#1A1D21</color>
+    <color name="elevationDark2">#222529</color>
+    <color name="elevationDark3">#2A2D33</color>
+    <color name="elevationDark4">#32353B</color>
+
+    <!-- Light theme tokens -->
+    <color name="colorPrimaryLight">@color/colorWhite</color>
+    <color name="colorOnPrimaryLight">@color/colorBlack</color>
+    <color name="colorSurfaceLight">@color/elevationLight1</color>
+    <color name="colorBackgroundLight">@color/colorGhostWhite</color>
+    <color name="colorOnSurfaceLight">@color/colorBlack</color>
+    <color name="colorSurfaceVariantLight">@color/elevationLight3</color>
+    <color name="colorOnSurfaceVariantLight">#424242</color> <!-- Darker text -->
+
+    <!-- Dark theme tokens -->
+    <color name="colorPrimaryDark">@color/colorCharcoal</color>
+    <color name="colorOnPrimaryDark">@color/colorWhite</color>
+    <color name="colorSurfaceDark">@color/elevationDark1</color>
+    <color name="colorBackgroundDark">@color/colorDarkBlack</color>
+    <color name="colorOnSurfaceDark">@color/colorWhite</color>
+    <color name="colorSurfaceVariantDark">@color/elevationDark3</color>
+    <color name="colorOnSurfaceVariantDark">#E0E0E0</color> <!-- Light grey text -->
+
+    <!-- Semantic aliases used by themes.xml -->
+    <color name="colorPrimary">@color/colorPrimaryDark</color>
+    <color name="colorOnPrimary">@color/colorOnPrimaryDark</color>
+    <color name="colorSecondary">@color/colorOrange</color>
+    <color name="colorTertiary">@color/colorBlue</color>
+    <color name="colorSurface">@color/colorSurfaceDark</color>
+    <color name="colorBackground">@color/colorBackgroundDark</color>
+    <color name="colorOnSurface">@color/colorOnSurfaceDark</color>
+    <color name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantDark</color>
+
+    <!-- Enhanced priority colors with more vibrance -->
+    <color name="priority_high">#FF3D00</color> <!-- Vibrant red-orange -->
+    <color name="priority_medium">@color/colorOrange</color> <!-- Orange -->
+    <color name="priority_low">#43A047</color> <!-- Green -->
+
+    <!-- Actions -->
+    <color name="complete_action">#00C853</color> <!-- Vibrant green -->
+    <color name="delete_action">#D50000</color> <!-- Vibrant red -->
+
+    <!-- Standard colors -->
+    <color name="white">@color/colorWhite</color>
+    <color name="black">@color/colorBlack</color>
+
+    <!-- Semi-transparent overlay colors for interactive effects -->
+    <color name="ripple_light">#20000000</color>
+    <color name="ripple_dark">#30FFFFFF</color>
+    <color name="scrim">#52000000</color>
 </resources>

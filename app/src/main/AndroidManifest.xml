@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- For re-scheduling alarms on boot -->
 
     <application
@@ -50,6 +51,15 @@
             android:name=".receiver.SnoozedNotificationReceiver"
             android:enabled="true"
             android:exported="false" />
+
+        <!-- Notification Action Activity for dialog interactions -->
+        <activity
+            android:name=".ui.NotificationActionActivity"
+            android:theme="@style/Theme.App.Translucent"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
 
     </application>
 

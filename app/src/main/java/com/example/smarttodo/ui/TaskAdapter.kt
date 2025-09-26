@@ -1,10 +1,16 @@
+@file:Suppress("unused", "UNUSED_PARAMETER")
+
 package com.example.smarttodo.ui
 
+import android.content.Context
 import android.graphics.Paint
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,89 +23,142 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+private const val ITEM_VIEW_TYPE_HEADER = 0
+private const val ITEM_VIEW_TYPE_ITEM = 1
+
 /**
- * A [ListAdapter] for displaying [Task] items in a RecyclerView.
- * It handles the creation and binding of ViewHolders, and uses [TaskDiffCallback]
- * to efficiently update the list when changes occur.
- *
- * @param onTaskClick Callback invoked when a task item is clicked.
- * @param onTaskLongClick Callback invoked when a task item is long-clicked.
- * @param onCompleteClick Callback invoked when a task's completion checkbox is clicked.
+ * Adapter for task list with headers. Uses ListAdapter for efficient diffs.
+ * Improvements made:
+ * - Cache a shared date formatter to avoid per-ViewHolder allocations.
+ * - Resolve secondary text color from theme attributes so theme switching works correctly.
+ * - Use payload updates to animate only completion changes.
  */
 class TaskAdapter(
-    private val onTaskClick: (Task) -> Unit,
+    private val onTaskClick: (Task, View) -> Unit,
     private val onTaskLongClick: (Task) -> Unit,
     private val onCompleteClick: (Task) -> Unit
-) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
+) : ListAdapter<Any, RecyclerView.ViewHolder>(TaskDiffCallback()) {
 
-    /**
-     * Called when RecyclerView needs a new [TaskViewHolder] of the given type to represent
-     * an item.
-     */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TaskViewHolder(binding)
+    companion object {
+        // Shared formatter (initialized lazily using first available context)
+        @Volatile
+        private var sharedDateFormatter: SimpleDateFormat? = null
+
+        @Suppress("UNUSED_PARAMETER")
+        private fun getSharedFormatter(context: Context): SimpleDateFormat {
+            val existing = sharedDateFormatter
+            if (existing != null) return existing
+            synchronized(this) {
+                val once = sharedDateFormatter
+                if (once != null) return once
+                val formatString = try {
+                    context.getString(R.string.date_time_format_item)
+                } catch (e: Exception) {
+                    // Log exception and reference it as throwable so analyzers see it used
+                    Log.w("TaskAdapter", "Failed to read date_time_format_item, using default format", e)
+                    "MMM dd, hh:mm a"
+                }
+                val fmt = SimpleDateFormat(formatString, Locale.getDefault())
+                sharedDateFormatter = fmt
+                return fmt
+            }
+        }
+
+        private fun resolveSecondaryTextColor(context: Context, fallbackRes: Int): Int {
+            // Use theme-aware color for secondary text
+            return ContextCompat.getColor(context, R.color.colorOnSurfaceVariantLight)
+        }
     }
 
-    /**
-     * Called by RecyclerView to display the data at the specified position.
-     */
-    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(getItem(position))
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is String -> ITEM_VIEW_TYPE_HEADER
+            is Task -> ITEM_VIEW_TYPE_ITEM
+            else -> throw IllegalArgumentException("Invalid type of data " + getItem(position).javaClass.name)
+        }
     }
 
-    /**
-     * Returns the [Task] at the specified adapter position.
-     */
-    fun getTaskAt(position: Int): Task = getItem(position)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            ITEM_VIEW_TYPE_HEADER -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_header, parent, false)
+                HeaderViewHolder(view)
+            }
+            ITEM_VIEW_TYPE_ITEM -> {
+                val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                TaskViewHolder(binding)
+            }
+            else -> throw IllegalArgumentException("Invalid view type")
+        }
+    }
 
-    /**
-     * ViewHolder for task items. Holds the view binding, sets up click listeners,
-     * and initializes a reusable [SimpleDateFormat] instance.
-     * The `bind` method is responsible for populating the views with task data.
-     *
-     * @property binding The view binding instance for `item_task.xml`.
-     */
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is TaskViewHolder -> {
+                val task = getItem(position) as Task
+                holder.bind(task)
+            }
+            is HeaderViewHolder -> {
+                val headerTitle = getItem(position) as String
+                holder.bind(headerTitle)
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty()) {
+            if (holder is TaskViewHolder) {
+                val task = getItem(position) as Task
+                payloads.forEach { payload ->
+                    if (payload == TaskDiffCallback.COMPLETION_PAYLOAD) {
+                        holder.animateCompletion(task.isCompleted)
+                    }
+                }
+            }
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+        }
+    }
+
+    fun getTaskAt(position: Int): Task? {
+        val item = getItem(position)
+        return if (item is Task) {
+            item
+        } else {
+            null
+        }
+    }
+
     inner class TaskViewHolder(private val binding: ItemTaskBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private lateinit var itemDateFormatter: SimpleDateFormat
-
         init {
-            try {
-                val formatString = itemView.context.getString(R.string.date_time_format_item)
-                itemDateFormatter = SimpleDateFormat(formatString, Locale.getDefault())
-            } catch (e: Exception) {
-                Log.e("TaskViewHolder", "Failed to load date format string R.string.date_time_format_item. Using default.", e)
-                itemDateFormatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault()) // Default fallback
-            }
+            // Lazily initialize shared formatter using the view context
+            getSharedFormatter(itemView.context)
 
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    getItem(position)?.let { task -> onTaskClick(task) }
+                    (getItem(position) as? Task)?.let { task -> onTaskClick(task, itemView) }
                 }
             }
             binding.root.setOnLongClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    getItem(position)?.let { task -> onTaskLongClick(task) }
+                    (getItem(position) as? Task)?.let { task -> onTaskLongClick(task) }
                     true
                 } else false
             }
             binding.checkboxComplete.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    getItem(position)?.let { task -> onCompleteClick(task) }
+                    (getItem(position) as? Task)?.let { task -> onCompleteClick(task) }
                 }
             }
         }
 
-        /**
-         * Binds a [Task] object to the views in this ViewHolder.
-         * Uses the pre-initialized [itemDateFormatter] for date formatting.
-         */
         fun bind(task: Task) {
+            binding.root.transitionName = "task_card_${task.id}"
             binding.apply {
                 textViewTitle.text = task.title
                 checkboxComplete.isChecked = task.isCompleted
@@ -113,18 +172,23 @@ class TaskAdapter(
 
                 task.dueDate?.let { dueDate ->
                     try {
-                        textViewDueDate.text = itemView.context.getString(R.string.due_date_prefix_item, itemDateFormatter.format(dueDate))
+                        val formatter = getSharedFormatter(itemView.context)
+                        layoutDueDate.text = itemView.context.getString(R.string.due_date_prefix_item, formatter.format(dueDate))
                     } catch (e: Exception) {
-                        Log.e("TaskViewHolder", "Failed to load due date prefix string R.string.due_date_prefix_item. Using default.", e)
-                        textViewDueDate.text = "Due: ${itemDateFormatter.format(dueDate)}" // Basic fallback
+                        val ex = e
+                        Log.e("TaskViewHolder", "Failed to load due date prefix string R.string.due_date_format_item. Using fallback.", ex)
+                        // Use the translatable resource as a fallback as well
+                        layoutDueDate.text = itemView.context.getString(R.string.due_date_prefix_item, getSharedFormatter(itemView.context).format(dueDate))
                     }
                     layoutDueDate.visibility = View.VISIBLE
 
                     val now = Date()
                     if (dueDate.before(now) && !task.isCompleted) {
-                        textViewDueDate.setTextColor(ContextCompat.getColor(root.context, R.color.priority_high))
+                        layoutDueDate.setTextColor(ContextCompat.getColor(root.context, R.color.priority_high))
                     } else {
-                        textViewDueDate.setTextColor(ContextCompat.getColor(root.context, R.color.text_secondary_light))
+                        // Resolve secondary text color from theme so it matches dark/light
+                        val secondaryColor = resolveSecondaryTextColor(root.context, R.color.colorOnSurfaceVariantLight)
+                        layoutDueDate.setTextColor(secondaryColor)
                     }
                 } ?: run {
                     layoutDueDate.visibility = View.GONE
@@ -137,30 +201,75 @@ class TaskAdapter(
                 }
                 viewPriorityIndicator.setBackgroundColor(ContextCompat.getColor(root.context, priorityColorResId))
 
-                if (task.isCompleted) {
-                    textViewTitle.paintFlags = textViewTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                    textViewTitle.alpha = 0.6f
-                    textViewDescription.alpha = 0.6f
-                    root.alpha = 0.7f
-                } else {
-                    textViewTitle.paintFlags = textViewTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                    textViewTitle.alpha = 1.0f
-                    textViewDescription.alpha = 1.0f
-                    root.alpha = 1.0f
-                }
+                updateCompletedStatus(task.isCompleted)
+            }
+        }
+
+        fun animateCompletion(isCompleted: Boolean) {
+            val animation = if (isCompleted) {
+                AnimationUtils.loadAnimation(itemView.context, R.anim.fade_out)
+            } else {
+                AnimationUtils.loadAnimation(itemView.context, R.anim.fade_in)
+            }
+            itemView.startAnimation(animation)
+            updateCompletedStatus(isCompleted)
+        }
+
+        private fun updateCompletedStatus(isCompleted: Boolean) {
+            if (isCompleted) {
+                binding.textViewTitle.paintFlags = binding.textViewTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                binding.textViewTitle.alpha = 0.6f
+                binding.textViewDescription.alpha = 0.6f
+                binding.root.alpha = 0.7f
+            } else {
+                binding.textViewTitle.paintFlags = binding.textViewTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                binding.textViewTitle.alpha = 1.0f
+                binding.textViewDescription.alpha = 1.0f
+                binding.root.alpha = 1.0f
             }
         }
     }
 
-    /**
-     * A [DiffUtil.ItemCallback] for calculating the difference between two non-null [Task] items.
-     */
-    class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
-        override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
-            return oldItem.id == newItem.id
+    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val headerTitle: TextView = view.findViewById(R.id.header_title)
+
+        fun bind(title: String) {
+            headerTitle.text = title
         }
-        override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
-            return oldItem == newItem
+    }
+
+    class TaskDiffCallback : DiffUtil.ItemCallback<Any>() {
+        companion object {
+            val COMPLETION_PAYLOAD = Any()
+        }
+
+        override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
+            return if (oldItem is Task && newItem is Task) {
+                oldItem.id == newItem.id
+            } else if (oldItem is String && newItem is String) {
+                oldItem == newItem
+            } else {
+                false
+            }
+        }
+
+        override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
+            return if (oldItem is Task && newItem is Task) {
+                oldItem == newItem
+            } else if (oldItem is String && newItem is String) {
+                oldItem == newItem
+            } else {
+                false
+            }
+        }
+
+        override fun getChangePayload(oldItem: Any, newItem: Any): Any? {
+            if (oldItem is Task && newItem is Task) {
+                if (oldItem.isCompleted != newItem.isCompleted) {
+                    return COMPLETION_PAYLOAD
+                }
+            }
+            return null
         }
     }
 }

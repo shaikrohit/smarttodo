@@ -2,99 +2,95 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.App.Card.Elevated"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/card_margin"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardElevation="@dimen/card_elevation"
-    app:strokeWidth="0dp">
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:stateListAnimator="@animator/card_state_list_anim"
+    android:transitionName="task_card_transition">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/spacing_medium">
+        android:padding="16dp">
 
-        <CheckBox
+        <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/checkboxComplete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/checkbox_margin_end"
-            android:contentDescription="@string/mark_complete" />
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/mark_complete"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:buttonTint="?attr/colorSecondary" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/textViewTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.App.TaskTitle"
+            android:textColor="?attr/colorOnSurface"
+            android:alpha="1.0"
+            app:layout_constraintEnd_toStartOf="@+id/viewPriorityIndicator"
+            app:layout_constraintStart_toEndOf="@+id/checkboxComplete"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sample Task Title" />
 
-            <TextView
-                android:id="@+id/textViewTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_primary_light"
-                android:textSize="@dimen/text_size_large"
-                android:textStyle="bold"
-                tools:text="Sample Task Title" />
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.App.TaskDescription"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:alpha="1.0"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/textViewTitle"
+            app:layout_constraintStart_toStartOf="@+id/textViewTitle"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+            tools:text="Sample task description here that might be a bit longer and require multiple lines"
+            tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/textViewDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/description_margin_top"
-                android:textColor="@color/text_primary_light"
-                android:textSize="@dimen/text_size_medium"
-                android:visibility="gone"
-                tools:text="Sample task description here"
-                tools:visibility="visible" />
-
-            <LinearLayout
-                android:id="@+id/layoutDueDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_small"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="@dimen/spacing_medium"
-                    android:layout_height="@dimen/spacing_medium"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/icon_margin_end"
-                    android:src="@drawable/ic_schedule"
-                    app:tint="@color/text_primary_light" />
-
-                <TextView
-                    android:id="@+id/textViewDueDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary_light"
-                    android:textSize="@dimen/text_size_small"
-                    tools:text="Due: Tomorrow 3:00 PM" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <View
-            android:id="@+id/viewPriorityIndicator"
-            android:layout_width="@dimen/priority_indicator_width"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/spacing_small"
-            android:background="@drawable/priority_indicator_background"
-            tools:backgroundTint="@color/priority_high" />
-
-        <ImageButton
-            android:id="@+id/buttonMoreOptions"
+        <!-- Simplified due-date view with icon -->
+        <TextView
+            android:id="@+id/layoutDueDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/spacing_small"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/more_options"
-            android:padding="@dimen/spacing_small"
-            android:src="@drawable/ic_more_vert"
-            app:tint="@color/text_primary_light" />
+            android:layout_marginTop="8dp"
+            android:drawablePadding="8dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:visibility="gone"
+            android:drawableStart="@drawable/ic_schedule"
+            android:textAppearance="@style/TextAppearance.App.Caption"
+            android:textColor="?attr/colorSecondary"
+            android:alpha="1.0"
+            app:layout_constraintStart_toStartOf="@+id/textViewTitle"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDescription"
+            tools:text="Tomorrow 3:00 PM"
+            tools:visibility="visible" />
 
-    </LinearLayout>
+        <!-- Enhanced priority indicator with rounded shape -->
+        <View
+            android:id="@+id/viewPriorityIndicator"
+            android:layout_width="8dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/priority_indicator_background"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:backgroundTint="@color/priority_high" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

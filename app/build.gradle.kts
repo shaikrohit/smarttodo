@@ -10,6 +10,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 
     defaultConfig {
@@ -31,14 +32,26 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    // Fix for SQLite native lib deletion warning
+    kapt {
+        correctErrorTypes = true
+        useBuildCache = false
+        javacOptions {
+            option("-Xmaxerrs", "500")
+        }
+    }
 }
+
 
 dependencies {
     // Core Android libraries
