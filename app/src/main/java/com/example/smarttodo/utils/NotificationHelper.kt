@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.AudioAttributes
@@ -14,21 +15,21 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import com.example.smarttodo.MainActivity
 import com.example.smarttodo.R
-import com.example.smarttodo.data.Task
 import com.example.smarttodo.data.Priority
+import com.example.smarttodo.data.Task
+import com.example.smarttodo.receiver.NotificationActionReceiver
 import com.example.smarttodo.ui.NotificationActionActivity
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import android.preference.PreferenceManager
 import com.example.smarttodo.util.SoundMode
-import androidx.core.net.toUri
 
 class NotificationHelper(private val context: Context) {
 
@@ -74,7 +75,7 @@ class NotificationHelper(private val context: Context) {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setUsage(AudioAttributes.USAGE_ALARM) // Using USAGE_ALARM for higher priority
                         .build()
-                    setSound(null, audioAttributes) // We'll set sound per notification
+                    setSound(null, audioAttributes) // We'''ll set sound per notification
                 }
 
                 // Make the notification lights and badge show

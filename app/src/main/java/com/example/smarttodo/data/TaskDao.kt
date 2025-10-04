@@ -56,4 +56,7 @@ interface TaskDao {
 
     @Query("SELECT COUNT(*) FROM tasks WHERE isCompleted = 1")
     suspend fun getCompletedTaskCount(): Int
+
+    @Query("UPDATE tasks SET isCompleted = :isCompleted WHERE id = :taskId")
+    suspend fun setTaskCompleted(taskId: Int, isCompleted: Boolean)
 }

@@ -39,7 +39,7 @@
 
         <!-- Notification Action Receiver -->
         <receiver
-            android:name=".utils.NotificationActionReceiver"
+            android:name=".receiver.NotificationActionReceiver"
             android:enabled="true"
             android:exported="false" >
             <intent-filter>
