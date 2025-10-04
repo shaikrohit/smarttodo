@@ -1,6 +1,6 @@
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_play">
+    android:drawable="@drawable/ic_play_compatible">
     <target
-        android:name="play"
+        android:name="path"
         android:animation="@animator/play_to_pause_animation" />
 </animated-vector>

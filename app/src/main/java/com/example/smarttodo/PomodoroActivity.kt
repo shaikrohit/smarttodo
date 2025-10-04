@@ -1,13 +1,14 @@
 package com.example.smarttodo
 
 import android.animation.ObjectAnimator
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.example.smarttodo.databinding.ActivityPomodoroBinding
 import com.example.smarttodo.ui.PomodoroViewModel
 import com.example.smarttodo.ui.PomodoroViewModelFactory
@@ -18,7 +19,7 @@ class PomodoroActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPomodoroBinding
     private val viewModel: PomodoroViewModel by viewModels {
-        PomodoroViewModelFactory((application as SmartTodoApplication).repository)
+        PomodoroViewModelFactory(application, (application as SmartTodoApplication).repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,15 +30,38 @@ class PomodoroActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        setupDurationSelector()
         observeViewModel()
         setupClickListeners()
     }
 
-    private fun observeViewModel() {
-        viewModel.task.observe(this) { task ->
-            supportActionBar?.title = task?.title ?: getString(R.string.pomodoro_timer_default_title)
+    private fun setupDurationSelector() {
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.pomodoro_durations,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.durationSelector.adapter = adapter
+            binding.durationSelector.setSelection(1) // Default to 25 minutes
         }
 
+        binding.durationSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val durationInMinutes = when (position) {
+                    0 -> 15L
+                    1 -> 25L
+                    2 -> 45L
+                    else -> 25L
+                }
+                viewModel.setTimerDuration(durationInMinutes)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+    }
+
+    private fun observeViewModel() {
         viewModel.timerValue.observe(this) { millisUntilFinished ->
             updateTimerText(millisUntilFinished)
             updateProgressBar(millisUntilFinished, viewModel.initialDuration)
@@ -45,12 +69,7 @@ class PomodoroActivity : AppCompatActivity() {
 
         viewModel.timerState.observe(this) { state ->
             updateButton(state)
-        }
-
-        viewModel.error.observe(this) { error ->
-            if (error != null) {
-                android.widget.Toast.makeText(this, error, android.widget.Toast.LENGTH_SHORT).show()
-            }
+            binding.durationSelector.isEnabled = state == TimerState.IDLE || state == TimerState.FINISHED
         }
     }
 
@@ -58,9 +77,7 @@ class PomodoroActivity : AppCompatActivity() {
         binding.startPauseButton.setOnClickListener {
             when (viewModel.timerState.value) {
                 TimerState.RUNNING -> viewModel.pauseTimer()
-                TimerState.PAUSED -> viewModel.resumeTimer()
-                TimerState.IDLE, TimerState.FINISHED -> viewModel.startTimer()
-                null -> viewModel.startTimer()
+                else -> viewModel.startTimer()
             }
         }
 
@@ -82,25 +99,22 @@ class PomodoroActivity : AppCompatActivity() {
         } else {
             100
         }
-        val animator = ObjectAnimator.ofInt(binding.progressBar, "progress", binding.progressBar.progress, progress)
-        animator.duration = 1000 // Animate over 1 second
-        animator.interpolator = DecelerateInterpolator()
-        animator.start()
+        ObjectAnimator.ofInt(binding.progressBar, "progress", binding.progressBar.progress, progress).apply {
+            duration = 1000
+            interpolator = DecelerateInterpolator()
+            start()
+        }
     }
 
     private fun updateButton(state: TimerState?) {
         val button = binding.startPauseButton
-        val drawableRes = when (state) {
-            TimerState.RUNNING -> R.drawable.avd_play_to_pause
-            TimerState.PAUSED -> R.drawable.avd_pause_to_play
-            else -> R.drawable.ic_play
-        }
-        button.setImageResource(drawableRes)
-        val drawable = button.drawable
-        if (drawable is AnimatedVectorDrawable) {
-            drawable.start()
-        } else if (drawable is AnimatedVectorDrawableCompat) {
-            drawable.start()
+        when (state) {
+            TimerState.RUNNING -> {
+                button.setImageResource(android.R.drawable.ic_media_pause)
+            }
+            else -> {
+                button.setImageResource(android.R.drawable.ic_media_play)
+            }
         }
     }
 
