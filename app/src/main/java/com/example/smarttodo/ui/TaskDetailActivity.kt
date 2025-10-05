@@ -2,7 +2,6 @@
 
 package com.example.smarttodo.ui
 
-import android.graphics.Color
 import android.os.Bundle
 import android.transition.Fade
 import android.view.MenuItem
@@ -31,6 +30,8 @@ class TaskDetailActivity : AppCompatActivity() {
         // Use a platform fade transition for shared element transitions
         window.sharedElementEnterTransition = Fade().apply { duration = 320L }
         window.sharedElementReturnTransition = Fade().apply { duration = 320L }
+        // Postpone the enter transition until the task is loaded
+        postponeEnterTransition()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_detail)
@@ -63,7 +64,7 @@ class TaskDetailActivity : AppCompatActivity() {
         // Mark complete button
         findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonMarkComplete).setOnClickListener {
             task?.let { t ->
-                toggleCompleteAndFinish(t)
+                toggleCompleteAndUpdate(t)
             }
         }
     }
@@ -91,6 +92,8 @@ class TaskDetailActivity : AppCompatActivity() {
                     return@launch
                 }
                 populateViews(loaded)
+                // Start the postponed transition now that the data is loaded
+                startPostponedEnterTransition()
             }
         }
     }
@@ -134,13 +137,15 @@ class TaskDetailActivity : AppCompatActivity() {
         btn.text = if (t.isCompleted) getString(R.string.task_incomplete) else getString(R.string.mark_complete)
     }
 
-    private fun toggleCompleteAndFinish(t: Task) {
+    private fun toggleCompleteAndUpdate(t: Task) {
         lifecycleScope.launch(Dispatchers.IO) {
             val repo = (application as com.example.smarttodo.SmartTodoApplication).repository
             val updated = t.copy(isCompleted = !t.isCompleted, completionDate = if (!t.isCompleted) Date() else null)
             repo.update(updated)
+            task = updated // Update the local task object
             launch(Dispatchers.Main) {
-                finish()
+                // Re-populate the views to reflect the change
+                populateViews(updated)
             }
         }
     }

@@ -12,30 +12,37 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginBottom="24dp"
-        android:alpha="0.6"
+        android:alpha="0.85"
         android:src="@drawable/ic_task_list"
         android:contentDescription="@string/no_tasks_title"
-        app:tint="?attr/colorOnSurfaceVariant" />
+        app:tint="@color/colorPrimary" />
 
     <TextView
+        android:id="@+id/empty_state_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_tasks_title"
-        android:textAppearance="?attr/textAppearanceHeadline5" />
+        android:textAppearance="@style/TextAppearance.App.Headline5"
+        android:textColor="@color/colorPrimary" />
 
     <TextView
+        android:id="@+id/empty_state_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/no_tasks_subtitle"
-        android:textAppearance="?attr/textAppearanceBody1"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        android:textAppearance="@style/TextAppearance.App.Body1"
+        android:textColor="@color/colorOnSurfaceVariant" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonEmptyAdd"
+        style="@style/Widget.App.Button.Elevated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/add_task" />
+        android:text="@string/add_task"
+        app:backgroundTint="@color/colorSecondary"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/white" />
 
 </LinearLayout>

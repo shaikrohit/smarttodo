@@ -5,8 +5,7 @@ package com.example.smarttodo.ui
 import android.content.Context
 import android.graphics.Paint
 import android.util.Log
-import android.util.TypedValue
-import android.view.LayoutInflater
+  import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -66,7 +65,12 @@ class TaskAdapter(
 
         private fun resolveSecondaryTextColor(context: Context, fallbackRes: Int): Int {
             // Use theme-aware color for secondary text
-            return ContextCompat.getColor(context, R.color.colorOnSurfaceVariantLight)
+            val typedValue = android.util.TypedValue()
+            return if (context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)) {
+                typedValue.data
+            } else {
+                ContextCompat.getColor(context, fallbackRes)
+            }
         }
     }
 
@@ -187,7 +191,7 @@ class TaskAdapter(
                         layoutDueDate.setTextColor(ContextCompat.getColor(root.context, R.color.priority_high))
                     } else {
                         // Resolve secondary text color from theme so it matches dark/light
-                        val secondaryColor = resolveSecondaryTextColor(root.context, R.color.colorOnSurfaceVariantLight)
+                        val secondaryColor = resolveSecondaryTextColor(root.context, R.color.textMuted)
                         layoutDueDate.setTextColor(secondaryColor)
                     }
                 } ?: run {
@@ -198,6 +202,7 @@ class TaskAdapter(
                     Priority.HIGH -> R.color.priority_high
                     Priority.MEDIUM -> R.color.priority_medium
                     Priority.LOW -> R.color.priority_low
+                    else -> android.R.color.transparent
                 }
                 viewPriorityIndicator.setBackgroundColor(ContextCompat.getColor(root.context, priorityColorResId))
 
@@ -264,10 +269,8 @@ class TaskAdapter(
         }
 
         override fun getChangePayload(oldItem: Any, newItem: Any): Any? {
-            if (oldItem is Task && newItem is Task) {
-                if (oldItem.isCompleted != newItem.isCompleted) {
-                    return COMPLETION_PAYLOAD
-                }
+            if (oldItem is Task && newItem is Task && oldItem.isCompleted != newItem.isCompleted) {
+                return COMPLETION_PAYLOAD
             }
             return null
         }

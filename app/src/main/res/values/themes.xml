@@ -1,52 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.SmartToDo" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Light tokens (these will be overridden by values-night automatically) -->
-        <item name="colorPrimary">@color/colorPrimaryLight</item>
-        <item name="colorOnPrimary">@color/colorOnPrimaryLight</item>
-        <item name="colorSecondary">@color/colorOrange</item>
-        <item name="colorSecondaryVariant">@color/colorOrangeLight</item>
-        <item name="colorOnSecondary">@color/colorWhite</item>
-        <item name="colorTertiary">@color/colorBlue</item>
-        <item name="colorTertiaryVariant">@color/colorBlueLight</item>
-        <item name="colorOnTertiary">@color/colorWhite</item>
-        <item name="colorSurface">@color/colorSurfaceLight</item>
-        <item name="android:colorBackground">@color/colorBackgroundLight</item>
-        <item name="colorOnSurface">@color/colorOnSurfaceLight</item>
-        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantLight</item>
-        <item name="colorError">@color/delete_action</item>
-        <item name="colorOnError">@color/colorWhite</item>
-
-        <!-- Enhanced ripple effects -->
+    <style name="Theme.SmartToDo" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Light tokens (single theme) -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorTertiary">@color/colorTertiary</item>
+        <item name="colorOnTertiary">@color/colorOnTertiary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariant</item>
+        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="colorOnError">@color/colorOnError</item>
+        <item name="colorControlActivated">@color/colorSecondary</item>
+        <item name="android:colorAccent">@color/colorSecondary</item>
+        <item name="android:textColorPrimary">@color/colorOnSurface</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariant</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
         <item name="colorControlHighlight">@color/ripple_light</item>
-
-        <!-- Ensure text colors are visible -->
-        <item name="android:textColorPrimary">@color/colorOnSurfaceLight</item>
-        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantLight</item>
-        <item name="android:textColor">@color/colorOnSurfaceLight</item>
-
-        <!-- TextInputLayout styles -->
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
-
-        <!-- Material component defaults -->
         <item name="materialButtonStyle">@style/Widget.App.Button.Elevated</item>
         <item name="materialCardViewStyle">@style/Widget.App.Card.Elevated</item>
         <item name="chipStyle">@style/Widget.App.Chip.Modern</item>
-
-        <!-- Status bar and navigation bar styling -->
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">@color/deepBlueDark</item>
+        <item name="android:navigationBarColor">@color/offWhite</item>
         <item name="android:windowLightStatusBar">true</item>
-
-        <!-- Enhanced Animations / Transitions -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowActivityTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/app_enter_transition</item>
-        <item name="android:windowExitTransition">@transition/app_exit_transition</item>
-        <item name="android:windowSharedElementEnterTransition">@transition/shared_element_transition</item>
-        <item name="android:windowSharedElementExitTransition">@transition/shared_element_transition</item>
-
-        <!-- Text appearances -->
         <item name="textAppearanceHeadline1">@style/TextAppearance.App.Headline1</item>
         <item name="textAppearanceHeadline2">@style/TextAppearance.App.Headline2</item>
         <item name="textAppearanceHeadline3">@style/TextAppearance.App.Headline3</item>
@@ -60,41 +43,44 @@
         <item name="textAppearanceCaption">@style/TextAppearance.App.Caption</item>
         <item name="textAppearanceButton">@style/TextAppearance.App.Button</item>
         <item name="textAppearanceOverline">@style/TextAppearance.App.Overline</item>
-
-        <!-- Bottom sheet styling -->
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.SmartToDo.Dialog</item>
     </style>
 
     <style name="Theme.SmartToDo.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="colorPrimary">@color/colorPrimaryLight</item>
-        <item name="colorSecondary">@color/colorOrange</item>
-        <item name="colorTertiary">@color/colorBlue</item>
-        <item name="colorSurface">@color/colorSurfaceLight</item>
-        <item name="colorOnSurface">@color/colorOnSurfaceLight</item>
-        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantLight</item>
-
-        <!-- Ensure text colors are visible -->
-        <item name="android:textColorPrimary">@color/colorOnSurfaceLight</item>
-        <item name="android:textColorSecondary">@color/colorOnSurfaceVariantLight</item>
-        <item name="android:textColor">@color/colorOnSurfaceLight</item>
-
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorTertiary">@color/colorTertiary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariant</item>
+        <item name="android:textColorPrimary">@color/colorOnSurface</item>
+        <item name="android:textColorSecondary">@color/colorOnSurfaceVariant</item>
+        <item name="android:textColor">@color/colorOnSurface</item>
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
 
-    <!-- Stylish dialog with slide animation -->
     <style name="Theme.SmartToDo.Dialog.Slide" parent="Theme.SmartToDo.Dialog">
         <item name="android:windowAnimationStyle">@style/DialogAnimation.Slide</item>
     </style>
 
-    <!-- Modern bottom sheet dialog -->
     <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.App.BottomSheet</item>
-        <item name="colorSurface">@color/colorSurfaceLight</item>
-        <item name="colorPrimary">@color/colorPrimaryLight</item>
-        <item name="colorSecondary">@color/colorOrange</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="ThemeOverlay.SmartToDo.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurfaceVariant</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
 </resources>

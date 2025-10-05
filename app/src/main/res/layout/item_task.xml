@@ -11,6 +11,7 @@
     android:layout_marginBottom="8dp"
     android:clickable="true"
     android:focusable="true"
+    app:cardBackgroundColor="@color/task_item_background"
     android:stateListAnimator="@animator/card_state_list_anim"
     android:transitionName="task_card_transition">
 
@@ -36,7 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textAppearance="@style/TextAppearance.App.TaskTitle"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             android:alpha="1.0"
             app:layout_constraintEnd_toStartOf="@+id/viewPriorityIndicator"
             app:layout_constraintStart_toEndOf="@+id/checkboxComplete"
@@ -49,7 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textAppearance="@style/TextAppearance.App.TaskDescription"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             android:alpha="1.0"
             android:maxLines="2"
             android:ellipsize="end"
@@ -59,6 +62,17 @@
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
             tools:text="Sample task description here that might be a bit longer and require multiple lines"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.App.TaskTime"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+            app:layout_constraintStart_toStartOf="@id/textViewTitle"
+            tools:text="12:00 PM" />
 
         <!-- Simplified due-date view with icon -->
         <TextView
@@ -72,7 +86,8 @@
             android:visibility="gone"
             android:drawableStart="@drawable/ic_schedule"
             android:textAppearance="@style/TextAppearance.App.Caption"
-            android:textColor="?attr/colorSecondary"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             android:alpha="1.0"
             app:layout_constraintStart_toStartOf="@+id/textViewTitle"
             app:layout_constraintTop_toBottomOf="@+id/textViewDescription"

@@ -1,85 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Enhanced color palette with vibrant, futuristic colors -->
-    <color name="colorBlack">#0B0D10</color>
-    <color name="colorDarkBlack">#05070A</color>
-    <color name="colorCharcoal">#1A1D21</color>
+    <!-- Core Brand Palette -->
+    <color name="deepBlue">#0D47A1</color> <!-- Primary: Deep Blue (headers, highlights) -->
+    <color name="deepBlueLight">#1976D2</color>
+    <color name="deepBlueDark">#062F6E</color>
 
-    <!-- Vibrant orange with gradient options -->
-    <color name="colorOrange">#FF5722</color> <!-- Main orange -->
-    <color name="colorOrangeDark">#E64A19</color> <!-- Darker orange -->
-    <color name="colorOrangeLight">#FFAB91</color> <!-- Lighter orange -->
-    <color name="colorOrangeAccent">#FF7D47</color> <!-- Accent orange -->
+    <color name="accentGreen">#43A047</color> <!-- Accent / Secondary: actions, icons, completion -->
+    <color name="accentGreenLight">#66BB6A</color>
+    <color name="accentGreenDark">#2E7031</color>
 
-    <!-- Blue palette for modern UI -->
-    <color name="colorBlue">#2196F3</color> <!-- Main blue -->
-    <color name="colorBlueDark">#0D47A1</color> <!-- Darker blue -->
-    <color name="colorBlueLight">#BBDEFB</color> <!-- Lighter blue -->
-    <color name="colorCyan">#00BCD4</color> <!-- Cyan accent -->
+    <color name="offWhite">#F8F9FA</color> <!-- Background / Surfaces -->
+    <color name="offWhiteAlt">#F1F3F5</color>
+    <color name="textBlack">#000000</color>
+    <color name="textMuted">#424242</color>
 
+    <!-- Legacy colors retained ONLY for priority & existing component references (do not repurpose) -->
+    <color name="colorOrange">#FF5722</color>
+    <color name="colorOrangeDark">#E64A19</color>
+    <color name="colorOrangeLight">#FFAB91</color>
+    <color name="colorBlue">#2196F3</color>
+    <color name="colorBlueDark">#0D47A1</color>
+    <color name="colorBlueLight">#BBDEFB</color>
+
+    <!-- Added legacy aliases required by existing layouts -->
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorOffWhite">#F8F9FA</color>
-    <color name="colorGhostWhite">#F1F3F5</color>
+    <color name="colorBlack">#000000</color>
 
-    <!-- Accent colors for vibrant highlights -->
-    <color name="colorPurple">#673AB7</color>
-    <color name="colorTeal">#009688</color>
+    <!-- Semantic aliases (single-theme) -->
+    <color name="colorPrimary">@color/deepBlue</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorSecondary">@color/accentGreen</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+    <color name="colorTertiary">@color/deepBlueLight</color>
+    <color name="colorOnTertiary">#FFFFFF</color>
+    <color name="colorSurface">@color/offWhite</color>
+    <color name="colorBackground">@color/offWhite</color>
+    <color name="colorOnSurface">@color/textBlack</color>
+    <color name="colorOnSurfaceVariant">@color/textMuted</color>
+    <color name="colorError">#D50000</color>
+    <color name="colorOnError">#FFFFFF</color>
 
-    <!-- Surface and elevation colors for light theme -->
-    <color name="elevationLight1">#FFFFFF</color>
-    <color name="elevationLight2">#F9FAFC</color>
-    <color name="elevationLight3">#F5F7FA</color>
-    <color name="elevationLight4">#F0F2F5</color>
+    <!-- Priority Colors (UNCHANGED as requested) -->
+    <color name="priority_high">#FF3D00</color>
+    <color name="priority_medium">@color/colorOrange</color>
+    <color name="priority_low">#43A047</color>
 
-    <!-- Surface and elevation colors for dark theme -->
-    <color name="elevationDark1">#1A1D21</color>
-    <color name="elevationDark2">#222529</color>
-    <color name="elevationDark3">#2A2D33</color>
-    <color name="elevationDark4">#32353B</color>
+    <!-- Action swipe indicators -->
+    <color name="complete_action">#00C853</color>
+    <color name="delete_action">#D50000</color>
 
-    <!-- Light theme tokens -->
-    <color name="colorPrimaryLight">@color/colorWhite</color>
-    <color name="colorOnPrimaryLight">@color/colorBlack</color>
-    <color name="colorSurfaceLight">@color/elevationLight1</color>
-    <color name="colorBackgroundLight">@color/colorGhostWhite</color>
-    <color name="colorOnSurfaceLight">@color/colorBlack</color>
-    <color name="colorSurfaceVariantLight">@color/elevationLight3</color>
-    <color name="colorOnSurfaceVariantLight">#424242</color> <!-- Darker text -->
+    <!-- Standard -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
-    <!-- Dark theme tokens -->
-    <color name="colorPrimaryDark">@color/colorCharcoal</color>
-    <color name="colorOnPrimaryDark">@color/colorWhite</color>
-    <color name="colorSurfaceDark">@color/elevationDark1</color>
-    <color name="colorBackgroundDark">@color/colorDarkBlack</color>
-    <color name="colorOnSurfaceDark">@color/colorWhite</color>
-    <color name="colorSurfaceVariantDark">@color/elevationDark3</color>
-    <color name="colorOnSurfaceVariantDark">#E0E0E0</color> <!-- Light grey text -->
-
-    <!-- Semantic aliases used by themes.xml -->
-    <color name="colorPrimary">@color/colorPrimaryDark</color>
-    <color name="colorOnPrimary">@color/colorOnPrimaryDark</color>
-    <color name="colorSecondary">@color/colorOrange</color>
-    <color name="colorTertiary">@color/colorBlue</color>
-    <color name="colorSurface">@color/colorSurfaceDark</color>
-    <color name="colorBackground">@color/colorBackgroundDark</color>
-    <color name="colorOnSurface">@color/colorOnSurfaceDark</color>
-    <color name="colorOnSurfaceVariant">@color/colorOnSurfaceVariantDark</color>
-
-    <!-- Enhanced priority colors with more vibrance -->
-    <color name="priority_high">#FF3D00</color> <!-- Vibrant red-orange -->
-    <color name="priority_medium">@color/colorOrange</color> <!-- Orange -->
-    <color name="priority_low">#43A047</color> <!-- Green -->
-
-    <!-- Actions -->
-    <color name="complete_action">#00C853</color> <!-- Vibrant green -->
-    <color name="delete_action">#D50000</color> <!-- Vibrant red -->
-
-    <!-- Standard colors -->
-    <color name="white">@color/colorWhite</color>
-    <color name="black">@color/colorBlack</color>
-
-    <!-- Semi-transparent overlay colors for interactive effects -->
+    <!-- Ripple / overlay (single palette) -->
     <color name="ripple_light">#20000000</color>
-    <color name="ripple_dark">#30FFFFFF</color>
+    <color name="ripple_dark">#20000000</color>
     <color name="scrim">#52000000</color>
+
+    <!-- Surface Variants -->
+    <color name="colorSurfaceVariant">@color/offWhiteAlt</color>
+    <color name="task_item_background">#b5b1f2</color>
 </resources>

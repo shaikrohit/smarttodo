@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="@color/colorBackground">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleTextColor="?attr/colorOnPrimary"
-        app:navigationIconTint="?attr/colorOnPrimary"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@color/colorOnPrimary"
+        app:navigationIconTint="@color/colorOnPrimary" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="56dp"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/task_detail_card"
-            style="@style/Widget.App.Card.Soft"
+            style="@style/Widget.App.Card.Elevated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:transitionName="task_card_transition">
+            app:cardBackgroundColor="@color/colorSurface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,27 +37,27 @@
                     android:id="@+id/textViewTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceHeadline5"
-                    android:textColor="?attr/colorOnSurface"
-                    android:text="Sample Task Title" />
+                    android:textAppearance="@style/TextAppearance.App.Headline5"
+                    android:textColor="@color/colorPrimary"
+                    tools:text="Sample Task Title" />
 
                 <TextView
                     android:id="@+id/textViewDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:text="Detailed description here." />
+                    android:textAppearance="@style/TextAppearance.App.Body1"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    tools:text="Detailed description here." />
 
                 <TextView
                     android:id="@+id/textDetailDue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:textAppearance="?attr/textAppearanceSubtitle1"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:text="Due: Tomorrow 3:00 PM" />
+                    android:textAppearance="@style/TextAppearance.App.Subtitle1"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    tools:text="Due: Tomorrow 3:00 PM" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipPriority"
@@ -65,18 +65,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    app:chipIconTint="?attr/colorOnSurface"
-                    android:text="@string/priority_high" />
+                    android:textColor="@color/white"
+                    tools:text="High" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonMarkComplete"
-                    style="@style/Widget.App.Button.Soft"
+                    style="@style/Widget.App.Button.Elevated"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/mark_complete"
-                    app:iconTint="@color/white"
-                    app:backgroundTint="?attr/colorSecondary" />
+                    app:backgroundTint="@color/colorSecondary"
+                    app:iconTint="@color/white" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

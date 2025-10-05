@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="?attr/colorSurface">
+    android:background="@color/colorSurface">
 
     <TextView
         android:id="@+id/textViewDialogTitle"
@@ -15,7 +15,7 @@
         android:layout_marginBottom="20dp"
         android:text="@string/add_task_title"
         android:textAppearance="@style/TextAppearance.App.Headline6"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="?attr/colorPrimary" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/inputLayoutTitle"
@@ -26,8 +26,8 @@
         android:hint="@string/task_title_hint"
         app:helperText="@string/title_required"
         app:startIconDrawable="@android:drawable/ic_menu_edit"
-        app:startIconTint="?attr/colorSecondary"
-        app:helperTextTextColor="?attr/colorError">
+        app:startIconTint="@color/colorSecondary"
+        app:helperTextTextColor="@color/colorError">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTitle"
@@ -35,8 +35,7 @@
             android:layout_height="wrap_content"
             android:inputType="textCapSentences"
             android:maxLines="2"
-            android:textColor="?attr/colorOnSurface"
-            android:alpha="1.0"
+            android:textColor="@color/colorOnSurface"
             android:textAppearance="@style/TextAppearance.App.TextInputLayout" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,7 +47,7 @@
         android:layout_marginBottom="20dp"
         android:hint="@string/task_description_hint"
         app:startIconDrawable="@android:drawable/ic_menu_sort_by_size"
-        app:startIconTint="?attr/colorSecondary">
+        app:startIconTint="@color/colorSecondary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextDescription"
@@ -57,8 +56,7 @@
             android:inputType="textCapSentences|textMultiLine"
             android:maxLines="4"
             android:minLines="2"
-            android:textColor="?attr/colorOnSurface"
-            android:alpha="1.0"
+            android:textColor="@color/colorOnSurface"
             android:textAppearance="@style/TextAppearance.App.TextInputLayout" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,7 +66,7 @@
         android:layout_marginBottom="12dp"
         android:text="@string/priority"
         android:textAppearance="@style/TextAppearance.App.Subtitle2"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="@color/colorOnSurface" />
 
     <!-- Enhanced Priority Selection -->
     <com.google.android.material.chip.ChipGroup
@@ -121,7 +119,7 @@
         android:layout_marginBottom="12dp"
         android:text="@string/task_type"
         android:textAppearance="@style/TextAppearance.App.Subtitle2"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="@color/colorOnSurface" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupTaskType"
@@ -179,7 +177,10 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             app:icon="@android:drawable/ic_menu_my_calendar"
-            android:text="@string/select_date" />
+            android:text="@string/select_date"
+            app:backgroundTint="@color/accentGreen"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSelectTime"
@@ -189,7 +190,10 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             app:icon="@android:drawable/ic_menu_recent_history"
-            android:text="@string/select_time" />
+            android:text="@string/select_time"
+            app:backgroundTint="@color/accentGreen"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -205,14 +209,14 @@
             android:layout_weight="1"
             android:text="@string/set_reminder"
             android:textAppearance="@style/TextAppearance.App.Subtitle2"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="@color/colorOnSurface" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchReminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:thumbTint="@color/colorOrange"
-            app:trackTint="@color/colorOrangeLight"
+            app:thumbTint="@color/colorSecondary"
+            app:trackTint="@color/accentGreenLight"
             android:contentDescription="@string/set_reminder" />
 
     </LinearLayout>
@@ -232,22 +236,26 @@
             android:layout_height="wrap_content"
             android:text="@string/label_pre_reminder"
             android:textAppearance="@style/TextAppearance.App.Body2"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/colorOnSurface"
+            android:layout_marginBottom="8dp"
+            android:labelFor="@id/spinnerPreReminder"/>
 
         <Spinner
             android:id="@+id/spinnerPreReminder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:gravity="center_vertical"
+            android:contentDescription="@string/label_pre_reminder"
             android:entries="@array/pre_reminder_options"
-            android:padding="12dp"
             android:background="@drawable/spinner_background" />
 
         <TextView
             android:id="@+id/textViewCustomPreReminderDisplay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorSecondary"
+            android:textColor="@color/colorSecondary"
             android:textAppearance="@style/TextAppearance.App.Caption"
             android:layout_marginTop="8dp"
             android:visibility="gone"
@@ -271,8 +279,9 @@
             android:layout_height="wrap_content"
             android:text="@string/select_reminder_sound"
             android:textAppearance="@style/TextAppearance.App.Subtitle2"
-            android:textColor="?attr/colorOnSurface"
-            android:paddingVertical="12dp"
+            android:textColor="@color/colorOnSurface"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
             android:drawablePadding="12dp"
             android:gravity="center_vertical"
             android:clickable="true"
@@ -285,7 +294,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.App.Caption"
-            android:textColor="?attr/colorSecondary"
+            android:textColor="@color/colorSecondary"
             android:layout_marginTop="8dp"
             android:visibility="gone"
             tools:visibility="visible"
@@ -305,7 +314,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/colorOnSurface"
             android:text="@string/cancel" />
 
         <com.google.android.material.button.MaterialButton
@@ -314,6 +323,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@android:drawable/ic_menu_save"
-            android:text="@string/save_task" />
+            android:text="@string/save_task"
+            app:backgroundTint="@color/accentGreen"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

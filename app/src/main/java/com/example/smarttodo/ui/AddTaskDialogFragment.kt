@@ -1,9 +1,8 @@
 package com.example.smarttodo.ui
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.os.Bundle
 import android.text.InputType
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,8 +19,12 @@ import com.example.smarttodo.data.Priority
 import com.example.smarttodo.data.Task
 import com.example.smarttodo.data.TaskType
 import com.example.smarttodo.databinding.DialogAddTaskBinding
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -205,45 +208,53 @@ class AddTaskDialogFragment : DialogFragment() {
     }
 
     private fun showDatePicker() {
-        val calendar = Calendar.getInstance().apply { selectedDate?.let { time = it } }
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                val newCalendar = Calendar.getInstance().apply { selectedDate?.let { time = it } } // Preserve existing time if any
-                newCalendar.set(year, month, dayOfMonth)
-                selectedDate = newCalendar.time
-                Log.d(TAG, "Date selected: $selectedDate")
-                updateDateTimeDisplay()
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000 // Allow today
-        datePickerDialog.show()
+        val currentCal = Calendar.getInstance()
+        selectedDate?.let { currentCal.time = it }
+
+        val constraints = CalendarConstraints.Builder()
+            .setStart(System.currentTimeMillis() - 1000) // allow today
+            .build()
+
+        val builder = MaterialDatePicker.Builder.datePicker()
+            .setTitleText(R.string.select_date)
+            .setCalendarConstraints(constraints)
+            .setSelection(currentCal.timeInMillis)
+
+        val picker = builder.build()
+        picker.addOnPositiveButtonClickListener { selection ->
+            val preserved = Calendar.getInstance().apply { selectedDate?.let { time = it } }
+            val newDateCal = Calendar.getInstance().apply { timeInMillis = selection }
+            // Preserve hour/min/sec if already chosen
+            newDateCal.set(Calendar.HOUR_OF_DAY, preserved.get(Calendar.HOUR_OF_DAY))
+            newDateCal.set(Calendar.MINUTE, preserved.get(Calendar.MINUTE))
+            newDateCal.set(Calendar.SECOND, 0)
+            selectedDate = newDateCal.time
+            updateDateTimeDisplay()
+        }
+        picker.show(parentFragmentManager, "material_date_picker")
     }
 
     private fun showTimePicker() {
         if (selectedDate == null) {
-            Log.d(TAG, "No date selected for time picker, defaulting to now.")
-            selectedDate = Date() // Default to current date and time if no date was set
+            selectedDate = Date()
         }
-        val calendar = Calendar.getInstance().apply { time = selectedDate!! }
-        TimePickerDialog(
-            requireContext(),
-            { _, hourOfDay, minute ->
-                val newCalendar = Calendar.getInstance().apply { time = selectedDate!! }
-                newCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                newCalendar.set(Calendar.MINUTE, minute)
-                newCalendar.set(Calendar.SECOND, 0) // Reset seconds for consistency
-                selectedDate = newCalendar.time
-                Log.d(TAG, "Time selected: $selectedDate")
-                updateDateTimeDisplay()
-            },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            false // Use 24-hour format based on system settings (false for 12hr AM/PM picker)
-        ).show()
+        val cal = Calendar.getInstance().apply { time = selectedDate!! }
+        val is24 = DateFormat.is24HourFormat(requireContext())
+        val picker = MaterialTimePicker.Builder()
+            .setTitleText(R.string.select_time)
+            .setHour(cal.get(Calendar.HOUR_OF_DAY))
+            .setMinute(cal.get(Calendar.MINUTE))
+            .setTimeFormat(if (is24) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H)
+            .build()
+        picker.addOnPositiveButtonClickListener {
+            val newCal = Calendar.getInstance().apply { time = selectedDate!! }
+            newCal.set(Calendar.HOUR_OF_DAY, picker.hour)
+            newCal.set(Calendar.MINUTE, picker.minute)
+            newCal.set(Calendar.SECOND, 0)
+            selectedDate = newCal.time
+            updateDateTimeDisplay()
+        }
+        picker.show(parentFragmentManager, "material_time_picker")
     }
 
     /**

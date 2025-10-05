@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.example.smarttodo.R
 import com.example.smarttodo.databinding.DialogNotificationSettingsBinding
-import com.example.smarttodo.util.NotificationHelper
 import com.example.smarttodo.util.SoundMode
+import com.example.smarttodo.utils.NotificationHelper
 
 class NotificationSettingsDialog : DialogFragment() {
     private var _binding: DialogNotificationSettingsBinding? = null
@@ -27,7 +27,12 @@ class NotificationSettingsDialog : DialogFragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { intent ->
-                val uri = intent.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                @Suppress("DEPRECATION")
+                val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri::class.java)
+                } else {
+                    intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                }
                 notificationHelper.saveNotificationSettings(SoundMode.CUSTOM, uri)
                 updateCurrentSoundText()
             }
@@ -46,6 +51,20 @@ class NotificationSettingsDialog : DialogFragment() {
         setupClickListeners()
         setupRadioGroupListener()
         updateCurrentSoundText()
+
+        // Handle Save button click
+        binding.buttonSaveSettings.setOnClickListener {
+            val selectedMode = when (binding.radioGroupSoundMode.checkedRadioButtonId) {
+                R.id.radioButtonDefaultSound -> SoundMode.DEFAULT
+                R.id.radioButtonCustomSound -> SoundMode.CUSTOM
+                R.id.radioButtonSilent -> SoundMode.SILENT
+                else -> SoundMode.DEFAULT
+            }
+
+            notificationHelper.saveNotificationSettings(selectedMode, null)
+            Toast.makeText(requireContext(), R.string.settings_saved, Toast.LENGTH_SHORT).show()
+            dismiss()
+        }
     }
 
     private fun loadInitialSettings() {
@@ -96,34 +115,31 @@ class NotificationSettingsDialog : DialogFragment() {
         }
 
         binding.buttonClose.setOnClickListener {
-            saveSnoozeDuration()
-            dismiss()
+            if (saveSnoozeDuration()) {
+                dismiss()
+            }
         }
     }
 
-    private fun saveSnoozeDuration() {
+    private fun saveSnoozeDuration(): Boolean {
         val snoozeText = binding.editTextSnoozeDuration.text.toString()
-        if (TextUtils.isEmpty(snoozeText)) {
+        if (snoozeText.isBlank()) {
             notificationHelper.saveSnoozeDuration(NotificationHelper.DEFAULT_SNOOZE_MINUTES)
-            // Optionally inform the user that default is used
-            // Toast.makeText(context, getString(R.string.snooze_duration_empty_default), Toast.LENGTH_SHORT).show()
-            return
+            Toast.makeText(context, getString(R.string.snooze_duration_empty_default), Toast.LENGTH_SHORT).show()
+            return true
         }
-        try {
+        return try {
             val snoozeMinutes = snoozeText.toInt()
             if (snoozeMinutes > 0) {
                 notificationHelper.saveSnoozeDuration(snoozeMinutes)
+                true
             } else {
-                // Optionally inform user about invalid input, defaulting or keeping old value
-                // Toast.makeText(context, getString(R.string.snooze_duration_invalid_default), Toast.LENGTH_SHORT).show()
-                // For simplicity, if invalid (e.g. 0 or negative), we can revert to default or not save.
-                // Here, we save the default if input is not positive.
-                notificationHelper.saveSnoozeDuration(NotificationHelper.DEFAULT_SNOOZE_MINUTES)
+                Toast.makeText(context, getString(R.string.snooze_duration_invalid_default), Toast.LENGTH_SHORT).show()
+                false
             }
         } catch (e: NumberFormatException) {
-            // Handle cases where input is not a valid number
-            // Toast.makeText(context, getString(R.string.snooze_duration_invalid_format), Toast.LENGTH_SHORT).show()
-            notificationHelper.saveSnoozeDuration(NotificationHelper.DEFAULT_SNOOZE_MINUTES)
+            Toast.makeText(context, getString(R.string.snooze_duration_invalid_format), Toast.LENGTH_SHORT).show()
+            false
         }
     }
 
@@ -159,8 +175,6 @@ class NotificationSettingsDialog : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // It's good practice to save any pending changes here too, or ensure they are saved if the dialog is dismissed unexpectedly.
-        // However, with the current setup, saveSnoozeDuration() is called before dismiss().
         _binding = null
     }
 

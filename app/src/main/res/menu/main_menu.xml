@@ -2,11 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_theme"
-        android:title="@string/dark_mode"
-        android:icon="@android:drawable/ic_menu_day"
-        android:checkable="true"
-        android:checked="true"
+        android:id="@+id/action_settings"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings"
         app:showAsAction="ifRoom" />
 </menu>
 

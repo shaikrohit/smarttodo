@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/textViewDialogTitle"
@@ -18,68 +18,84 @@
         android:id="@+id/radioGroupSoundMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="24dp">
 
         <RadioButton
             android:id="@+id/radioButtonDefaultSound"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/notification_sound_mode_default"/>
 
         <RadioButton
             android:id="@+id/radioButtonCustomSound"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/notification_sound_mode_custom"/>
 
         <RadioButton
             android:id="@+id/radioButtonSilent"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/notification_sound_mode_silent"/>
     </RadioGroup>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonSelectSound"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/notification_select_custom_sound"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextSnoozeDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/notification_snooze_duration_hint"
+            android:inputType="number"
+            android:minHeight="48dp"
+            android:autofillHints="username"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonSelectSound"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/select_reminder_sound"/>
 
     <TextView
         android:id="@+id/textCurrentSound"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/notification_current_sound_prefix"
-        android:textAppearance="?attr/textAppearanceBody2"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputLayoutSnoozeDuration"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="24dp"
-        android:hint="@string/notification_snooze_duration_label">
+        android:gravity="end"
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextSnoozeDuration"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/buttonClose"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="3" />
+            android:layout_marginEnd="8dp"
+            android:minHeight="48dp"
+            android:text="@string/dialog_close"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonClose"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="@string/dialog_close" />
-
+        <Button
+            android:id="@+id/buttonSaveSettings"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/save"/>
+    </LinearLayout>
 </LinearLayout>

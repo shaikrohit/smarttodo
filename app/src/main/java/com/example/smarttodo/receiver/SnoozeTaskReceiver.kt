@@ -10,7 +10,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.smarttodo.SmartTodoApplication
 import com.example.smarttodo.data.Task // Ensure Task is imported
 import com.example.smarttodo.util.AlarmScheduler // For EXTRA_IS_PRE_REMINDER
-import com.example.smarttodo.util.NotificationHelper
+import com.example.smarttodo.utils.NotificationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

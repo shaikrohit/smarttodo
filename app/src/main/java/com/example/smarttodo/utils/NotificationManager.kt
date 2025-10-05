@@ -61,7 +61,7 @@ object NotificationManager {
                             notificationHelper.showToast("Task completed! 🎉")
                         }
 
-                        Log.i(TAG, "Task $taskId completed successfully")
+                        Log.i(TAG, "Task $taskId completed successfully: ${task.title}")
                         onComplete?.invoke(true)
                     } else {
                         Log.w(TAG, "Task not found for completion: $taskId")

@@ -22,15 +22,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.smarttodo.data.Task
 import com.example.smarttodo.databinding.ActivityMainBinding
 import com.example.smarttodo.ui.AddTaskDialogFragment
+import com.example.smarttodo.ui.NotificationSettingsDialog
 import com.example.smarttodo.ui.SwipeGestureHelper
 import com.example.smarttodo.ui.TaskAdapter
 import com.example.smarttodo.ui.TaskItemDecoration
 import com.example.smarttodo.ui.TaskViewModel
 import com.example.smarttodo.ui.TaskViewModelFactory
-import com.example.smarttodo.util.ThemeManager
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import java.util.Date
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,18 +41,15 @@ class MainActivity : AppCompatActivity() {
     private var inflatedEmptyState: View? = null
 
     private val taskViewModel: TaskViewModel by viewModels {
-        // Updated to pass application context to the factory
         TaskViewModelFactory(application, (application as SmartTodoApplication).repository)
     }
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            val messageResId = if (isGranted) {
-                R.string.notifications_permission_granted
-            } else {
-                R.string.notifications_permission_denied
+            if (!isGranted) {
+                // Show a toast message or a snackbar to inform the user
+                showToast(R.string.notifications_permission_denied)
             }
-            showToast(messageResId)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,11 +64,26 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         setupFab()
         setupSearch()
+        setupFilterChips()
         setupSwipeRefresh()
         observeViewModel()
-
-        applySavedTheme()
         askScheduleExactAlarmPermission() // Request alarm permission
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                val dialog = NotificationSettingsDialog()
+                dialog.show(supportFragmentManager, NotificationSettingsDialog.TAG)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /**
@@ -82,23 +96,21 @@ class MainActivity : AppCompatActivity() {
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
-                    // Permission already granted
-                    // You can initialize notification components here if needed
+                    // Permission is already granted, no action needed.
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // Show a dialog explaining why notifications are important
+                    // Explain to the user why we need the permission
                     MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.notification_permission_title)
-                        .setMessage(getString(R.string.notification_permission_rationale))
-                        .setPositiveButton(R.string.ok) { dialog, _ ->
+                        .setMessage(R.string.notification_permission_rationale)
+                        .setPositiveButton(R.string.ok) { _, _ ->
                             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            dialog.dismiss()
                         }
                         .setNegativeButton(R.string.cancel, null)
                         .show()
                 }
                 else -> {
-                    // First time asking or "Don't ask again" selected
+                    // Directly ask for the permission
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
@@ -126,31 +138,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.action_theme).isChecked = ThemeManager.isDarkMode(this)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_theme -> {
-                item.isChecked = !item.isChecked
-                ThemeManager.setDarkMode(this, item.isChecked)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun applySavedTheme() {
-        ThemeManager.applyTheme(ThemeManager.isDarkMode(this))
-    }
-
     private fun setupRecyclerView() {
         taskAdapter = TaskAdapter(
             onTaskClick = { task, view -> showTaskDetail(task, view) },
@@ -174,15 +161,27 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun setupFilterChips() {
+        binding.chipGroupFilter.setOnCheckedStateChangeListener { group, checkedIds ->
+            val filter = when {
+                checkedIds.contains(R.id.chipToday) -> "TODAY"
+                checkedIds.contains(R.id.chipTomorrow) -> "TOMORROW"
+                checkedIds.contains(R.id.chipUpcoming) -> "UPCOMING"
+                checkedIds.contains(R.id.chipHighPriority) -> "HIGH_PRIORITY"
+                checkedIds.contains(R.id.chipCompleted) -> "COMPLETED"
+                else -> "ALL"
+            }
+            taskViewModel.setFilter(filter)
+        }
+    }
+
     private fun showTaskDetail(task: Task, view: View) {
-        val intent = Intent(this, TaskDetailActivity::class.java).apply {
+        val intent = Intent(this, com.example.smarttodo.ui.TaskDetailActivity::class.java).apply {
             putExtra("task_id", task.id)
-            putExtra("task_title", task.title)
-            putExtra("task_description", task.description)
-            putExtra("transition_name", "task_card_${task.id}")
+           putExtra("transition_name", "task_card_${'$'}{task.id}")
         }
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            this, view, "task_card_${task.id}"
+            this, view, "task_card_${'$'}{task.id}"
         )
         startActivity(intent, options.toBundle())
     }
@@ -232,26 +231,9 @@ class MainActivity : AppCompatActivity() {
             binding.swipeRefreshLayout.isRefreshing = isLoading
         }
 
-        taskViewModel.categorizedTasks.observe(this) { categorizedTasks ->
-            val displayableList = mutableListOf<Any>()
-            if (categorizedTasks.today.isNotEmpty()) {
-                displayableList.add(getString(R.string.category_today))
-                displayableList.addAll(categorizedTasks.today)
-            }
-            if (categorizedTasks.tomorrow.isNotEmpty()) {
-                displayableList.add(getString(R.string.category_tomorrow))
-                displayableList.addAll(categorizedTasks.tomorrow)
-            }
-            if (categorizedTasks.upcoming.isNotEmpty()) {
-                displayableList.add(getString(R.string.category_upcoming))
-                displayableList.addAll(categorizedTasks.upcoming)
-            }
-            if (categorizedTasks.completed.isNotEmpty()) {
-                displayableList.add(getString(R.string.category_completed))
-                displayableList.addAll(categorizedTasks.completed)
-            }
-            taskAdapter.submitList(displayableList)
-            updateEmptyState(displayableList.isEmpty())
+        taskViewModel.tasksToDisplay.observe(this) { tasks ->
+            taskAdapter.submitList(tasks)
+            updateEmptyState(tasks.isEmpty())
         }
 
         taskViewModel.userMessageEvent.observe(this) { event ->
@@ -338,7 +320,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 onCancel?.invoke()
             }
-            .setOnCancelListener { 
+            .setOnCancelListener {
                 onCancel?.invoke()
             }
             .show()
@@ -370,28 +352,8 @@ class MainActivity : AppCompatActivity() {
         taskViewModel.insert(duplicatedTask)
     }
 
-    @Suppress("unused")
-    private fun showDeleteCompletedConfirmation() {
-        showConfirmationDialog(
-            titleResId = R.string.delete_completed_tasks_title,
-            messageResId = R.string.delete_completed_tasks_message,
-            onConfirm = { taskViewModel.deleteCompletedTasks() },
-            onCancel = {}
-        )
-    }
-
-    @Suppress("unused")
-    private fun showDeleteAllConfirmation() {
-        showConfirmationDialog(
-            titleResId = R.string.delete_all_tasks_title,
-            messageResId = R.string.delete_all_tasks_message,
-            positiveButtonResId = R.string.delete_all,
-            onConfirm = { taskViewModel.deleteAllTasks() },
-            onCancel = {}
-        )
-    }
-
     private fun showToast(@StringRes messageResId: Int) {
         Toast.makeText(this, getString(messageResId), Toast.LENGTH_SHORT).show()
     }
+
 }

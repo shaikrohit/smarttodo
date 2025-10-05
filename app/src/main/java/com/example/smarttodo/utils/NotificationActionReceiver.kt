@@ -97,13 +97,19 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
+    // Added validation for snooze duration and improved error handling
     private fun handleDirectSnooze(context: Context, taskId: Int, snoozeDurationMillis: Long) {
         CoroutineScope(Dispatchers.IO).launch {
+            if (snoozeDurationMillis <= 0) {
+                Log.e(TAG, "Invalid snooze duration: $snoozeDurationMillis for task $taskId")
+                return@launch
+            }
+
             try {
                 val taskDao = TaskDatabase.getDatabase(context).taskDao()
                 val task = taskDao.getTaskById(taskId)
 
-                if (task != null && !task.isCompleted) {
+                if (task != null) {
                     // IMMEDIATELY stop vibration and cancel notification
                     withContext(Dispatchers.Main) {
                         val notificationHelper = NotificationHelper(context)

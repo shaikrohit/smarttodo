@@ -4,28 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/colorBackground"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:background="@color/colorPrimary"
+        app:elevation="4dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorSurface"
+            android:background="@color/colorPrimary"
             android:elevation="0dp"
             app:titleTextAppearance="@style/TextAppearance.App.Headline6"
-            app:titleTextColor="?attr/colorOnSurface"
+            app:titleTextColor="@color/colorOnPrimary"
             app:title="@string/app_name"
-            app:menu="@menu/main_menu"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+            app:navigationIconTint="@color/colorOnPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -42,7 +40,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="28dp"
-            app:cardElevation="4dp">
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/colorSurface">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/searchInputLayout"
@@ -56,7 +55,7 @@
                 app:boxStrokeWidthFocused="0dp"
                 app:endIconMode="clear_text"
                 app:startIconDrawable="@drawable/ic_search"
-                app:startIconTint="?attr/colorSecondary">
+                app:startIconTint="@color/colorSecondary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/searchEditText"
@@ -65,7 +64,7 @@
                     android:background="@android:color/transparent"
                     android:inputType="text"
                     android:padding="16dp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="@color/colorOnSurface"
                     android:alpha="1.0"
                     android:maxLines="1" />
 
@@ -93,6 +92,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="All"
+                    app:chipBackgroundColor="@color/accentGreen"
+                    android:textColor="@color/white"
                     android:checked="true" />
 
                 <com.google.android.material.chip.Chip
@@ -100,6 +101,8 @@
                     style="@style/Widget.App.Chip.Modern"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:chipBackgroundColor="@color/accentGreen"
+                    android:textColor="@color/white"
                     android:text="Today" />
 
                 <com.google.android.material.chip.Chip
@@ -107,7 +110,18 @@
                     style="@style/Widget.App.Chip.Modern"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:chipBackgroundColor="@color/accentGreen"
+                    android:textColor="@color/white"
                     android:text="Upcoming" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTomorrow"
+                    style="@style/Widget.App.Chip.Modern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipBackgroundColor="@color/accentGreen"
+                    android:textColor="@color/white"
+                    android:text="Tomorrow" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipHighPriority"
@@ -115,8 +129,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:chipIcon="@android:drawable/btn_star_big_on"
-                    app:chipIconTint="@color/priority_high"
+                    app:chipIconTint="@color/white"
+                    app:chipBackgroundColor="@color/priority_high"
+                    android:textColor="@color/white"
                     android:text="High Priority" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCompleted"
+                    style="@style/Widget.App.Chip.Modern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipBackgroundColor="@color/accentGreen"
+                    android:textColor="@color/white"
+                    android:text="Completed" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
@@ -145,7 +170,7 @@
             
     </LinearLayout>
 
-    <!-- FAB Speed Dial with Animation -->
+    <!-- Pomodoro FAB now using accent green -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPomodoro"
         android:layout_width="wrap_content"
@@ -156,8 +181,8 @@
         android:contentDescription="@string/pomodoro_timer"
         android:stateListAnimator="@animator/fab_state_list_anim"
         app:srcCompat="@drawable/ic_timer"
-        app:backgroundTint="?attr/colorTertiary"
-        app:tint="@color/colorWhite"
+        app:backgroundTint="@color/colorSecondary"
+        app:tint="@color/white"
         app:fabSize="normal"
         app:elevation="6dp" />
 
@@ -171,8 +196,8 @@
         android:text="@string/add_task"
         android:stateListAnimator="@animator/fab_state_list_anim"
         app:icon="@drawable/ic_add"
-        app:iconTint="@color/colorWhite"
-        app:backgroundTint="?attr/colorSecondary"
+        app:iconTint="@color/white"
+        app:backgroundTint="@color/colorSecondary"
         app:iconGravity="textStart"
         app:elevation="6dp" />
 

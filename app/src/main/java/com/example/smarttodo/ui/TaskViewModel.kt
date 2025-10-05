@@ -50,16 +50,74 @@ class TaskViewModel(
     }
 
     private val _searchQuery = MutableLiveData("")
+    private val _filter = MutableLiveData("ALL")
+    val filter: LiveData<String> = _filter
 
     private val tasks: LiveData<List<Task>> = _searchQuery.switchMap { query ->
         repository.getTasks(query, null)
+    }
+
+    val tasksToDisplay: LiveData<List<Any>> = tasks.switchMap { allTasks ->
+        _filter.map { currentFilter ->
+            val filteredTasks = when (currentFilter) {
+                "TODAY" -> allTasks.filter { it.isToday() && !it.isCompleted }
+                "TOMORROW" -> allTasks.filter { it.isTomorrow() && !it.isCompleted }
+                "UPCOMING" -> allTasks.filter { it.isUpcoming() && !it.isCompleted }
+                "HIGH_PRIORITY" -> allTasks.filter { it.priority == com.example.smarttodo.data.Priority.HIGH && !it.isCompleted }
+                "COMPLETED" -> allTasks.filter { it.isCompleted }
+                else -> allTasks
+            }
+
+            val displayList = mutableListOf<Any>()
+            if (currentFilter == "ALL") {
+                displayList.addAll(buildCategorizedList(filteredTasks))
+            } else {
+                if (filteredTasks.isNotEmpty()) {
+                    val header = when (currentFilter) {
+                        "TODAY" -> application.getString(R.string.category_today)
+                        "TOMORROW" -> application.getString(R.string.category_tomorrow)
+                        "UPCOMING" -> application.getString(R.string.category_upcoming)
+                        "HIGH_PRIORITY" -> application.getString(R.string.category_high_priority)
+                        "COMPLETED" -> application.getString(R.string.category_completed)
+                        else -> ""
+                    }
+                    if (header.isNotEmpty()) {
+                        displayList.add(header)
+                    }
+                    displayList.addAll(filteredTasks)
+                }
+            }
+            displayList
+        }
+    }
+
+    private fun buildCategorizedList(tasks: List<Task>): List<Any> {
+        val displayableList = mutableListOf<Any>()
+        val categorized = categorizeTasks(tasks)
+        if (categorized.today.isNotEmpty()) {
+            displayableList.add(application.getString(R.string.category_today))
+            displayableList.addAll(categorized.today)
+        }
+        if (categorized.tomorrow.isNotEmpty()) {
+            displayableList.add(application.getString(R.string.category_tomorrow))
+            displayableList.addAll(categorized.tomorrow)
+        }
+        if (categorized.upcoming.isNotEmpty()) {
+            displayableList.add(application.getString(R.string.category_upcoming))
+            displayableList.addAll(categorized.upcoming)
+        }
+        if (categorized.completed.isNotEmpty()) {
+            displayableList.add(application.getString(R.string.category_completed))
+            displayableList.addAll(categorized.completed)
+        }
+        return displayableList
     }
 
     val categorizedTasks: LiveData<CategorizedTasks> = tasks.map { tasks ->
         categorizeTasks(tasks)
     }
 
-    private fun categorizeTasks(tasks: List<Task>): CategorizedTasks {
+    fun categorizeTasks(tasks: List<Task>): CategorizedTasks {
         val today = mutableListOf<Task>()
         val tomorrow = mutableListOf<Task>()
         val upcoming = mutableListOf<Task>()
@@ -231,4 +289,31 @@ class TaskViewModel(
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
+
+    fun setFilter(filter: String) {
+        _filter.value = filter
+    }
+}
+
+private fun Task.isToday(): Boolean {
+    val cal = Calendar.getInstance()
+    val today = cal.get(Calendar.DAY_OF_YEAR)
+    val year = cal.get(Calendar.YEAR)
+    cal.time = this.dueDate ?: return false
+    return cal.get(Calendar.DAY_OF_YEAR) == today && cal.get(Calendar.YEAR) == year
+}
+
+private fun Task.isTomorrow(): Boolean {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.DAY_OF_YEAR, 1)
+    val tomorrow = cal.get(Calendar.DAY_OF_YEAR)
+    val year = cal.get(Calendar.YEAR)
+    cal.time = this.dueDate ?: return false
+    return cal.get(Calendar.DAY_OF_YEAR) == tomorrow && cal.get(Calendar.YEAR) == year
+}
+
+private fun Task.isUpcoming(): Boolean {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.DAY_OF_YEAR, 1)
+    return this.dueDate?.after(cal.time) ?: false
 }

@@ -31,6 +31,10 @@
             android:name=".PomodoroActivity"
             android:theme="@style/Theme.SmartToDo" />
 
+        <activity
+            android:name=".ui.TaskDetailActivity"
+            android:theme="@style/Theme.SmartToDo" />
+
         <!-- Task Reminder Receiver -->
         <receiver
             android:name=".receiver.TaskReminderReceiver"
